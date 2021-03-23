@@ -1,0 +1,3349 @@
+REM *************************************************************************
+REM Photopal for Psion S3x
+REM
+REM Copyright (C) 2000, 2001 Flex.
+REM   SOCIETE GENERALE HUNGARIA BANK Rt.
+REM
+REM Originally designed by Peter Csutora
+REM Redesigned by Flex(FleXoft)
+REM Written  by Peter Csutora, Flex(FleXoft)
+REM (mailto: Gyorgy.Fleischmann@socgen.com or gfleischmann@yahoo.com)
+REM
+REM v2.0 +2000/xx/xx Buda, Flex.
+REM  Add: export and print feature
+REM
+REM v1.95dev +2001/04/27 Buda, Flex.
+REM  Bfx: Flash aperture, Flash distance (Thanks Peter!)
+REM  
+REM
+REM v1.94dev +2001/03/19 Buda, Flex.
+REM  Chg: About window
+REM  Add: last file
+REM
+REM v1.93dev +2001/01/11 Buda, Flex.
+REM  Add: Diopter converter
+REM  Add: Angle for Angle of view
+REM  Chg: LensChoi, DistChoi
+REM  Add: CloseUp: Object distance
+REM  Add: TubeChoi
+REM  Chg: Convert part in InvDOFCa
+REM  Add: Convert part in FlashDis, FlashBoi, HyperFoC, DOFCalc
+REM
+REM v1.92dev +2000/12/19 Buda, Flex.
+REM  Bfx: minor bug in the SaveIni
+REM
+REM v1.91dev +2000/12/05 Buda, Flex.
+REM  Add: minor changing in FileSize
+REM
+REM v1.9dev +2000/10/25 Buda, Flex.
+REM  Add: export feature
+REM  Add: CutFill$ understands 30(left) and -30(right)
+REM 
+REM v1.85dev +2000/10/24 Buda, Flex.
+REM  Add: redesigned the print feature
+REM
+REM v1.81dev +2000/10/17 Buda, Flex.
+REM  Bfx: Minor bugfix in the Flash Aperture function
+REM 
+REM v1.8dev +2000/10/04 Buda, Flex.
+REM  Add: start to implement the print feature
+REM  Chg: Sunrise/set function
+REM  Add: Moonphase feature
+REM 
+REM v1.7dev +2000/10/02 Buda, Flex.
+REM  Add: PgUp/PgDn feature
+REM  Add: Home(Ctrl+Psion+PgUp)/End(Ctrl+Psion+PgDn) feature
+REM  Bfx: Sunrise/set, add GMT correction
+REM 
+REM v1.6dev +2000/09/29 Buda, Flex.
+REM  Add: find the last record when starting
+REM  Bfx: file opening problem when no filename was given
+REM  Add: start to implement the printing function
+REM  Add: sunrise/set feature
+REM
+REM v1.5dev +2000/09/21 Buda, Flex.
+REM  Bfx: Filesize:() EVDiff2:()
+REM
+REM v1.4dev +2000/09/19 Buda, Flex.
+REM  Chg: better EV difference calculator
+REM
+REM v1.3dev +2000/07/31 Buda, Flex.
+REM  Chg: minor changing in Record (remember the place, the lens and the remark)
+REM 
+REM v1.2dev +2000/07/31 Buda, Flex.
+REM  Add: more graphics
+REM  Add: PutPic
+REM  Chg: minor changing in Invert DOF calc
+REM
+REM v1.1dev +2000/07/28 Buda, Flex.
+REM  Add: Invert DOF calc
+REM  Add: Hyperfocal calc
+REM  Add: File size
+REM  Add: Screen resolution
+REM  Add: 2 more items (units$:"cm,mm") in Convert
+REM
+REM v1.0beta +2000/07/24 Buda, Flex.
+REM  Bfx: too deep procedure statck >>> FIXED <<<
+REM  Chg: about window
+REM  Add: Close-up ratio
+REM  Tst: 1st public release.
+REM
+REM v0.9 +2000/07/21 Buda, Flex.
+REM  Chg: fine tuning
+REM  Tst: 3rd test release.
+REM
+REM v0.5 +2000/07/17 Buda, Flex.
+REM  Add: log feature
+REM  Add: file handling
+REM
+REM v0.2 +2000/07/11 Buda, Flex.
+REM  Add: digital functions
+REM  Add: convert the original icon and add it
+REM  Tst: 2nd test release.
+REM
+REM v0.1 +2000/07/10 Buda, Flex.
+REM  Tst: 1st test release.
+REM
+REM v0.0 +2000/07/06 Buda, Flex.
+REM  I got the original version for S5x from Peter Csutora.
+REM  http://members.tripod.com/~csutora/photopal.htm
+REM
+REM Documentation:
+REM --------------
+REM
+REM Latest version: http://www.geocities.com/gfleischmann/html/photopal/photopal.htm
+REM
+REM TODO:
+REM -----
+REM
+REM  CHECK Filesize function!!!									100%
+REM  Make file error window                                       0%
+REM  PgUp, PgDn                                                 100%
+REM  Export, print                                               60%
+REM  Delete/insert                                              100%
+REM  Sunrise/set 												 99%
+REM  Moon phase													 90%
+REM  Remember the place, the lens and the remark                100%
+REM
+REM =========================================================================
+REM
+REM This program is free software; you can redistribute it and/or modify
+REM it under the terms of the GNU General Public License as published by
+REM the Free Software Foundation; either version 2, or (at your option)
+REM any later version.
+REM
+REM This program is distributed in the hope that it will be useful,
+REM but WITHOUT ANY WARRANTY; without even the implied warranty of
+REM MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+REM GNU General Public License for more details.
+REM
+REM You should have received a copy of the GNU General Public License
+REM along with this program; see the file COPYING.  If not, write to
+REM the Free Software Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.
+REM
+REM *************************************************************************
+
+APP PhotoPal
+  EXT "LOG"
+  PATH "\PHOTO"
+  TYPE $1002
+  ICON "pp_multi.pic"
+ENDA
+
+PROC PhotoPal:
+
+  GLOBAL prognm$(128)
+  GLOBAL version$(10)
+  GLOBAL compile$(20)
+
+  GLOBAL welcome%,addreco%,newreco%,warning%,statusw%,coc%
+  GLOBAL aper$(255),shut$(255),lenses$(255),cameras$(255),films$(255)
+  
+  GLOBAL film1$(30),film2$(30)
+  GLOBAL film1w&,film1h&,film1u%
+  GLOBAL film2w&,film2h&,film2u%
+  
+  REM Patch v1.95
+  GLOBAL apertur$(3),shutter$(6),lens$(30)
+
+  GLOBAL descrip$(255),place$(30),remark$(255)
+
+  GLOBAL guidens$(6,3), guidens&(6)
+
+  GLOBAL frmunit%,tounit%
+  GLOBAL units$(24),defunit%
+  GLOBAL iso&
+  GLOBAL guiden&
+  GLOBAL focal,fstop
+  GLOBAL distance
+
+  GLOBAL saveini%
+  GLOBAL inifile$(30)
+
+  GLOBAL filenam$(128)
+  
+  GLOBAL lastfil$(128)
+
+  GLOBAL printer$(128)
+  GLOBAL baud%,parity%,data%,stop%,hand%
+
+  LOCAL invertp%,startpo%,counter%,positio%,y%,get%,mod%,menu%,count%
+
+  rem TRAP CACHE 5000,10000
+
+  LOCK ON
+
+  prognm$="PhotoPal for S3x"
+  version$="1.95dev"
+  compile$="2001 April 27"
+
+  inifile$="M:\PHOTO\photopal.cfg"
+
+  frmunit%=1: tounit%=1
+  units$="meters,Feet,Inch,cm,mm"
+
+  iso&=100
+  guiden&=28
+  focal=50
+  fstop=1.7
+  distance=10
+
+  saveini%=0
+
+  TRAP MKDIR "M:\PHOTO"
+
+  OpenIni:
+
+  filenam$=CMD$(2)
+  IF filenam$=""
+    filenam$="M:\PHOTO\photopal.log"
+    IF EXIST(filenam$)
+      SetFile:("O")
+    ELSE
+      SetFile:("C")
+    ENDIF  
+  ELSE
+    SetFile:(CMD$(3))
+  ENDIF
+  SETPATH "M:\PHOTO"
+
+  DEFAULTWIN 1
+
+  StatusWi:
+
+  gGREY 1
+  gAT 165,90
+  PutPic:(3,3)
+
+  gGREY 0
+  gAT 165,90
+  PutPic:(2,3)
+
+  REM Clear black plane
+  gGMODE 1
+  gAT 26,54 :gLINEBY 0,105
+  gAT 70,54 :gLINEBY 0,105
+  gAT 230,54 :gLINEBY 0,105
+  gAT 253,54 :gLINEBY 0,105
+  gAT 312,54 :gLINEBY 0,105
+  gGMODE 0
+
+  HeaderPr:
+
+  REM find the last one
+  count%=COUNT-1
+
+  IF count%<7
+    invertp%=count%
+    startpo%=2
+  ELSE
+    invertp%=7
+    startpo%=count%-5
+  ENDIF 
+
+  counter%=7
+
+  WHILE 1
+
+    count%=COUNT-1
+
+    IF counter%=7
+      IF count%<counter%
+        counter%=count%
+      ENDIF
+      POSITION startpo%
+      positio%=1
+    ENDIF
+
+    WHILE positio%<>counter%+1 AND count%<>0
+
+      gSTYLE 0
+      IF positio%=invertp%
+        gSTYLE 4
+      ENDIF
+      y%=52+positio%*15
+      gAT 7,y%
+      gPRINTB GEN$(POS-1,-2),19,2,2,2,2
+      gAT 27,y%
+      gPRINTB RIGHT$(ToDate$:(A.date&,"/"),5),43,2,2,2,2
+      gAT 71,y%
+      IF A.place$<>""
+        gPRINTB A.descrip$+" ["+A.place$+"]",159,2,2,2,2
+      ELSE
+        gPRINTB A.descrip$,159,2,2,2,2
+      ENDIF
+      gAT 231,y%
+      gPRINTB A.apertur$,22,2,2,2,2
+      gAT 254,y%
+      IF A.shutter$<>""
+        gPRINTB A.shutter$+"s",58,2,2,2,2
+      ELSE
+        gPRINTB "",58,2,2,2,2
+      ENDIF
+      gAT 313,y%
+      IF A.remark$<>""
+        gPRINTB A.lens$+" ["+A.remark$+"]",102+statusw%,2,2,2,2
+      ELSE
+        gPRINTB A.lens$,102+statusw%,2,2,2,2
+      ENDIF
+      NEXT
+      positio%=positio%+1
+
+    ENDWH
+
+    REM Print arrows
+
+    gSTYLE 0
+
+    gAT 1,159
+    IF startpo%+7<=COUNT
+      gPRINTB CHR$(25),6
+    ELSE
+      gPRINTB " ",6
+    ENDIF
+
+    gAT 1,53+15
+    IF startpo%<>2
+      gPRINTB CHR$(24),6
+    ELSE
+      gPRINTB " ",6
+    ENDIF
+
+    IF welcome%=999
+      About:
+      welcome%=1
+    ENDIF
+
+    REM GetKey() used characters
+    REM abcdefghijklmnopqrstuvwxyz_-
+    REM XXXXXXxXXXXX XXXXXXXXXXX X
+    REM ABCDEFGHIJKLMNOPQRSTUVWXYZ
+    REM XXXXXX  X      X XX    X
+
+    WHILE 1
+
+      get%=GET
+      mod%=KMOD
+      menu%=0
+
+      IF get%=290 AND mod%=0 :REM Menu
+        mINIT
+        mCARD "Index","New",%n,"Open",-%o,"Print",%p,"Export/Import",-%X,"Add entry (space)",%A,"Edit entry (enter)",-%E,"Edit info",-%I,"Exit",%x
+        mCARD "Tools I.","DOF",%d,"Hyperfocal",%h,"Invert DOF",-%u,"EV difference",-%e,"Flash distance",%f,"Flash aperture",%F,"Flash bounce",-%b
+        mCARD "Tools II.","Lens choice",%l,"Distance choice",-%D,"Extension tube choice",%k,"Close-up ratio",%C,"Angle of view",-%v,"Second ticker",-%s,"Sunrise/set",%t
+        mCARD "Digital","Scan",%S,"Print",%P,"Screen resolution",-%j,"File Size",%z
+        mCARD "Converters","ISO, ASA <-> DIN",%i,"Meters <-> Feet <-> Inch",%c,"Diopter <-> Focal length",%w
+        mCARD "Settings","Preferences",%r,"Databases",%B,"Set printer",%q,"Serial port",-%R,"About",%a
+        menu%=MENU
+      ENDIF
+
+      REM Getkey() DEBUG!!!
+      REM gAT 10,10 :gPRINTB "M:"+GEN$(menu%,3),40,2,2,2,2
+      REM gAT 10,22 :gPRINTB "K:"+GEN$(get%,3),40,2,2,2,2
+      REM gAT 10,34 :gPRINTB "m:"+GEN$(mod%,3),40,2,2,2,2
+
+      IF get%=257     :REM Down
+        IF (startpo%+invertp%-2)=count% :CONTINUE :ENDIF
+        IF invertp%=7 AND startpo%<count%
+          startpo%=startpo%+1
+          counter%=7
+          BREAK
+        ENDIF
+        positio%=invertp%
+        counter%=positio%+1
+        invertp%=invertp%+1
+        POSITION startpo%+positio%-1
+        BREAK
+      ELSEIF get%=256 :REM Up
+        IF (startpo%+invertp%)=3 :CONTINUE :ENDIF
+        IF invertp%=1 AND startpo%>2
+          startpo%=startpo%-1
+          counter%=7
+          BREAK
+        ENDIF
+        positio%=invertp%-1
+        counter%=positio%+1
+        invertp%=invertp%-1
+        POSITION startpo%+positio%-1
+        BREAK
+      ELSEIF get%=261 AND mod%=8 :REM Page Down
+        IF (startpo%+invertp%-2)=count% :CONTINUE :ENDIF
+REM code brush!!!        
+        IF invertp%<7 AND (startpo%+invertp%-2)<count%
+          positio%=count%-startpo%+2
+          IF positio%<7
+            invertp%=positio%
+          ELSE
+            invertp%=7
+          ENDIF
+          counter%=7
+          BREAK
+        ENDIF
+REM code brush!!!        
+        IF invertp%=7 AND (startpo%+invertp%-2)<count%
+          IF (startpo%+invertp%-2)+7<=count%
+            startpo%=startpo%+7
+          ELSE  
+            startpo%=count%-5
+          ENDIF
+          counter%=7
+          BREAK
+        ENDIF
+      ELSEIF get%=260 AND mod%=8 :REM Page Up
+        IF (startpo%+invertp%)=3 :CONTINUE :ENDIF
+        IF invertp%>1
+          counter%=invertp%
+          positio%=1
+          invertp%=1
+          POSITION startpo%
+          BREAK
+        ENDIF
+REM code brush!!!        
+        IF startpo%-7<2
+          startpo%=2
+        ELSE 
+          startpo%=startpo%-7
+        ENDIF
+        counter%=7
+        BREAK   
+      ELSEIF (get%=262 AND mod%=8) OR (get%=260 AND mod%=12) :REM Home or Ctrl+Psion+PgUp
+        IF (startpo%+invertp%)=3 :CONTINUE :ENDIF      
+        startpo%=2
+        invertp%=1
+        counter%=7
+        BREAK
+      ELSEIF (get%=263 AND mod%=8) OR (get%=261 AND mod%=12) :REM End or Ctrl+Psion+PgDn
+        IF (startpo%+invertp%-2)=count% :CONTINUE :ENDIF
+        IF count%>7
+          startpo%=count%-5
+          invertp%=7
+          counter%=7
+          BREAK
+        ELSE
+          invertp%=count%
+          counter%=invertp%
+          positio%=1
+          POSITION 2
+          BREAK
+        ENDIF
+      ELSEIF get%=290 AND mod%=4 :REM CONTROL+Menu - Change status window
+        saveini%=1
+        IF statusw%=64
+          statusw%=0
+        ELSEIF statusw%=32
+          statusw%=64
+        ELSE
+          statusw%=32
+        ENDIF
+        StatusWi:
+        HeaderPr:
+        counter%=7
+        BREAK
+      ELSEIF (get%=632 AND mod%=8) OR menu%=120 :REM Psion+x
+        DestApp:
+      ELSEIF get%=32 OR (get%=609 AND mod%=10) OR menu%=65  :REM Space, PSION+SHIFT+A - New record
+      IF RecordA%:
+      REM !!! IF Record%:(0)
+          IF count%-startpo%=5
+            startpo%=startpo%+1
+            invertp%=7
+          ELSEIF count%-startpo%<5
+            invertp%=count%+1
+          ELSE
+            startpo%=count%-4
+            invertp%=7
+          ENDIF
+          counter%=7
+          BREAK
+        ELSE
+          CONTINUE
+        ENDIF
+      ELSEIF (get%=13 AND mod%=0) OR (get%=613 AND mod%=10) OR menu%=%E  :REM Enter, PSION+SHIFT+E - Edit record
+        IF count%=0 :CONTINUE :ENDIF
+        positio%=startpo%+invertp%-1
+        POSITION positio%
+        IF RecordU%:
+          ReOrder:(positio%,count%-positio%+1)
+          positio%=invertp%
+          counter%=positio%
+          POSITION startpo%+invertp%-1
+          BREAK
+        ELSE
+          CONTINUE
+        ENDIF
+      ELSEIF (get%=13 AND mod%=8) :REM PSION+Enter - Insert record
+        IF RecordA%:
+          IF count%<>0
+            positio%=startpo%+invertp%-1
+            ReOrder:(positio%,count%-positio%+2)
+          ENDIF
+          counter%=7
+          BREAK
+        ELSE
+          CONTINUE
+        ENDIF
+      ELSEIF (get%=8 AND mod%=0) :REM Delete - Delete,erase record
+        IF count%<>0
+          IF AreYouSu:=%y
+            POSITION startpo%+invertp%-1
+            ERASE
+            REM DEBUG !!!
+            REM PRINT startpo%, startpo%+invertp%-2, count%
+            REM GET
+            REM Clear the screen
+            gAT 0,54
+            gFILL 480,106,1
+            IF (startpo%+invertp%-2=count% OR startpo%+5=count%) AND startpo%<>2
+              startpo%=startpo%-1
+            ENDIF
+            IF startpo%+invertp%-2>=count% AND invertp%<>1
+              invertp%=invertp%-1
+            ENDIF
+            gIPRINT "Deleted."
+            counter%=7
+            BREAK
+          ENDIF
+        ELSE
+          CONTINUE
+        ENDIF
+      ELSEIF (get%=617 AND mod%=10) OR menu%=%I :REM PSION+SHIFT+I - Edit info
+        HeaderUp:
+        HeaderPr:
+        CONTINUE
+      ELSEIF (get%=623 AND mod%=8) OR menu%=%o :REM PSION+SHIFT+O - File open
+        IF FileOpe%:
+          CONTINUE
+        ELSE
+          gCLS
+          HeaderPr:
+   
+          REM find the last one
+          count%=COUNT-1
+
+          IF count%<7
+            invertp%=count%
+            startpo%=2
+          ELSE
+            invertp%=7
+            startpo%=count%-5
+          ENDIF 
+
+          counter%=7
+
+          BREAK
+        ENDIF
+      ELSEIF (get%=622 AND mod%=8) OR menu%=%n :REM PSION+SHIFT+N - File new
+        IF FileNew%:
+          CONTINUE
+        ELSE
+          gCLS
+          HeaderPr:
+          invertp%=1
+          startpo%=2
+          counter%=7
+          BREAK
+        ENDIF
+      ELSEIF (get%=624 AND mod%=8) OR menu%=%p
+        IF COUNT=1
+          gIPRINT "Nothing to print!!!"
+          BEEP 1,150
+          CONTINUE
+        ENDIF  
+        Print:
+      ELSEIF (get%=632 AND mod%=10) OR menu%=%X
+        ExpImp:
+      ELSEIF (get%=612 AND mod%=8) OR menu%=%d
+        DOFCalc:
+      ELSEIF (get%=616 AND mod%=8) OR menu%=%h
+        HyperFoC:
+      ELSEIF (get%=629 AND mod%=8) OR menu%=%u
+        InvDOFCa:
+      ELSEIF (get%=613 AND mod%=8) OR menu%=%e
+        EVDiff2:
+      ELSEIF (get%=615 AND mod%=8) OR menu%=%g
+        EVDiff:
+      ELSEIF (get%=614 AND mod%=8) OR menu%=%f
+        FlashDis:
+      ELSEIF (get%=610 AND mod%=8) OR menu%=%b
+        FlashBou:
+      ELSEIF (get%=614 AND mod%=10) OR menu%=%F
+        FlashAp:
+      ELSEIF (get%=620 AND mod%=8) OR menu%=%l
+        LensChoi:
+      ELSEIF (get%=612 AND mod%=10) OR menu%=%D
+        DistChoi:
+      ELSEIF (get%=621 AND mod%=8) OR menu%=%k
+        TubeChoi:
+      ELSEIF (get%=611 AND mod%=10) OR menu%=%C
+        CloseUp:
+      ELSEIF (get%=630 AND mod%=10) OR menu%=%v
+        Angle:
+      ELSEIF (get%=627 AND mod%=8) OR menu%=%s
+        SecCount:
+      ELSEIF (get%=628 AND mod%=8) OR menu%=%t
+        RiseSet:
+      ELSEIF (get%=627 AND mod%=10) OR menu%=%S
+        Scanning:
+      ELSEIF (get%=624 AND mod%=10) OR menu%=%P
+        Scaling:
+      ELSEIF (get%=634 AND mod%=8) OR menu%=%z
+        FileSize:
+      ELSEIF (get%=618 AND mod%=8) OR menu%=%j
+        ResolCal:
+      ELSEIF (get%=617 AND mod%=8) OR menu%=%i
+        SpeedCon:
+      ELSEIF (get%=611 AND mod%=8) OR menu%=%c
+        MConvert:
+      ELSEIF (get%=631 AND mod%=8) OR menu%=%w
+		Diopter:
+      ELSEIF (get%=626 AND mod%=8) OR menu%=%r
+        Preferen:
+      ELSEIF (get%=610 AND mod%=10) OR menu%=%B
+        Database:
+      ELSEIF (get%=625 AND mod%=8) OR menu%=%q
+        SetPrint:
+      ELSEIF (get%=609 AND mod%=8) OR menu%=%a
+        About:
+      ENDIF
+
+    ENDWH
+
+  ENDWH
+
+  REM End Of the Program
+  STOP
+
+ENDP
+
+PROC FlashDis:
+
+  LOCAL neardist,fardist,dial%
+
+  REM Default unit
+  frmunit%=1
+  tounit%=defunit%
+
+  WHILE 1
+
+    dINIT "Flash distance calculator"
+    dLONG guiden&,"Flash guide number:",1,200
+    dLONG iso&,"Film speed (ISO):",6,6400
+    dFLOAT fstop,"Aperture (1/..):",1.00,64.00
+    dCHOICE tounit%,"Result unit:",units$
+    dBUTTONS "Guide numbers",%g,"Cancel",27,"Calculate",13
+    dial%=DIALOG
+
+    IF dial%=%g
+      GuideNum:
+      CONTINUE
+    ELSEIF dial%<>13
+      RETURN
+    ENDIF
+
+    fardist=guiden&/fstop*SQR(flt(iso&)/100)
+    neardist=fardist/4.9
+
+	WHILE 1
+
+      dINIT "Flash distance - RESULT"
+      dTEXT "Minimum distance:",GEN$(Convert:(neardist),5)+" "+Choose$:(units$,tounit%)+".",$100
+      dTEXT "Maximum distance:",GEN$(Convert:(fardist),5)+" "+Choose$:(units$,tounit%)+".",$300
+      dCHOICE tounit%,"Unit:",units$
+      dBUTTONS "Cancel",27,"Convert",%c,"Again",13
+
+      dial%=DIALOG
+
+      IF dial%=13
+        BREAK
+      ELSEIF dial%=0 :REM Esc!!!
+        RETURN
+      ENDIF
+      
+	ENDWH
+
+  ENDWH
+
+ENDP
+
+PROC EVDiff:
+
+  LOCAL iso1%,iso2%,fstop1%,fstop2%,speed1%,speed2%,diff%
+
+  iso1%=7: iso2%=7
+  fstop1%=3: fstop2%=3
+  speed1%=13: speed2%=13
+
+  WHILE 1
+
+    dINIT "EV difference calculator I."
+    dCHOICE iso1%,"Film speed (ISO):","6400,3200,1600,800,400,200,100,50,25,12,6"
+    dCHOICE fstop1%,"Aperture (1/..):","1.4,2,2.8,4,5.6,8,11,16,22,32,45"
+    dCHOICE speed1%,"Shutter (s):","30,15,8,4,2,1,1/2,1/4,1/8,1/15,1/30,1/60,1/125,1/250,1/500,1/1000,1/2000,1/4000,1/8000"
+    dBUTTONS "Cancel",27,"Continue",13
+
+    IF DIALOG<>13 :RETURN :ENDIF
+
+    dINIT "EV difference calculator II."
+    dCHOICE iso2%,"Film speed (ISO):","6400,3200,1600,800,400,200,100,50,25,12,6"
+    dCHOICE fstop2%,"Aperture (1/..):","1.4,2,2.8,4,5.6,8,11,16,22,32,45"
+    dCHOICE speed2%,"Shutter (s):","30,15,8,4,2,1,1/2,1/4,1/8,1/15,1/30,1/60,1/125,1/250,1/500,1/1000,1/2000,1/4000,1/8000"
+    dBUTTONS "Cancel",27,"Calculate",13
+
+    IF DIALOG<>13 :RETURN :ENDIF
+
+    diff%=(iso1%+fstop1%+speed1%)-(iso2%+fstop2%+speed2%)
+
+    dINIT "EV difference - RESULT"
+    IF diff%<0
+      dTEXT "","The first set of settings yields",$100
+      dTEXT "",GEN$(iabs(diff%),4)+" EV units brighter result.",$300
+    ELSEIF diff%>0
+      dTEXT "","The second set of settings yields",$100
+      dTEXT "",GEN$(iabs(diff%),4)+" EV units brighter result.",$300
+    ELSE
+      dTEXT "","The two sets of settings yield",$100
+      dTEXT "","equal bright result.",$300
+    ENDIF
+    dBUTTONS "Cancel",27,"Again",13
+
+    IF DIALOG<>13 :RETURN :ENDIF
+
+  ENDWH
+
+ENDP
+
+
+PROC SpeedCon:
+
+  LOCAL from,choice%
+
+  from=100
+  choice%=1
+
+  WHILE 1
+
+    dINIT "ISO, ASA <-> DIN"
+    dFLOAT from,"Film speed:",6,6400
+    dCHOICE choice%,"","ISO,DIN"
+    dTEXT "","----------------------",2
+    IF choice%=1
+      dTEXT "DIN:",GEN$(ISO2DIN:(from),3),$300
+    ELSE
+      IF from>40
+        from=40
+        gIPRINT "Maximum allowed DIN value is: 40!!!"
+      ENDIF
+      dTEXT "ISO:",GEN$(DIN2ISO:(from),4),$300
+    ENDIF
+    dBUTTONS "Cancel",27,"Calculate",13
+
+    IF DIALOG<>13 :RETURN :ENDIF
+
+  ENDWH
+
+ENDP
+
+PROC ISO2DIN:(iso)
+
+  RETURN 1+10*lOG(iso)
+
+ENDP
+
+PROC DIN2ISO:(din)
+
+  RETURN 10**((din-1)/10)
+
+ENDP
+
+PROC Convert:(inp)
+
+  LOCAL inp2,ret
+
+  IF frmunit%=4
+    inp2=inp/100
+  ELSEIF frmunit%=5
+    inp2=inp/1000
+  ELSE
+    inp2=inp
+  ENDIF
+
+  IF (frmunit%=1 OR frmunit%=4 OR frmunit%=5) AND tounit%=2
+    ret=inp2*3.28084
+  ELSEIF (frmunit%=1 OR frmunit%=4 OR frmunit%=5) AND tounit%=3
+    ret=inp2*39.37
+  ELSEIF frmunit%=2 AND (tounit%=1 OR tounit%=4 OR tounit%=5)
+    ret=inp2*0.3048
+  ELSEIF frmunit%=2 AND tounit%=3
+    ret=inp2*12
+  ELSEIF frmunit%=3 AND (tounit%=1 OR tounit%=4 OR tounit%=5)
+    ret=inp2*0.0254
+  ELSEIF frmunit%=3 AND tounit%=2
+    ret=inp2/12
+  ELSE
+    ret=inp2
+  ENDIF
+
+  IF tounit%=4
+    ret=ret*100
+  ELSEIF tounit%=5
+    ret=ret*1000
+  ENDIF
+
+  RETURN ret
+
+ENDP
+
+PROC GuideNum:
+
+  LOCAL guidtmp&(6), dial%
+  
+  guidtmp&(1)=guidens&(1)
+  guidtmp&(2)=guidens&(2)
+  guidtmp&(3)=guidens&(3)
+  guidtmp&(4)=guidens&(4)
+  guidtmp&(5)=guidens&(5)
+
+  dINIT "Guide number of your flash (ISO 100)"
+  dLONG guidens&(1)," at "+guidens$(1)+"mm:",1,200
+  dLONG guidens&(2)," at "+guidens$(2)+"mm:",1,200
+  dLONG guidens&(3)," at "+guidens$(3)+"mm:",1,200
+  dLONG guidens&(4)," at "+guidens$(4)+"mm:",1,200
+  dLONG guidens&(5)," at "+guidens$(5)+"mm:",1,200
+  dTEXT "","Choose one and press [ENTER]!",$100
+
+  dial%=DIALOG
+  
+  IF dial%=0
+    guidens&(1)=guidtmp&(1)
+    guidens&(2)=guidtmp&(2)
+    guidens&(3)=guidtmp&(3)
+    guidens&(4)=guidtmp&(4)
+    guidens&(5)=guidtmp&(5)
+  ELSE
+    guiden&=guidens&(dial%-1)  
+
+    REM SaveIni:
+    saveini%=1
+  ENDIF
+  
+ENDP
+
+PROC DOFCalc:
+
+  LOCAL tmpdist,format%,tmpunit%
+  LOCAL neardist,fardist,hyperdis
+  LOCAL dial%
+
+  REM Default unit
+  tmpunit%=defunit%
+
+  WHILE 1
+
+    dINIT "Dept of field calculator"
+    dFLOAT focal,"Focal length (mm):",8,2000
+    dFLOAT fstop,"Aperture (1/..):",1.00,64.00
+    dFLOAT distance,"Object distance:",0,10000
+    dCHOICE tmpunit%,"Unit:",units$
+    dCHOICE format%,"Film format:","35mm,6x45,6x6,6x7,6x9,4x5,5x7,8x10,movie 16mm,movie 35mm"
+    dBUTTONS "Cancel",27,"Calculate",13
+
+    IF DIALOG<>13 :RETURN :ENDIF
+
+    hyperdis=(focal*focal)/(fstop*CirConf:(format%))
+
+    frmunit%=tmpunit%
+    tounit%=1
+
+    tmpdist=(Convert:(distance)*1000)
+
+    frmunit%=1
+    tounit%=tmpunit%
+
+    neardist=((hyperdis*tmpdist)/(hyperdis+(tmpdist-focal)))/1000
+    fardist=((hyperdis*tmpdist)/(hyperdis-(tmpdist-focal)))/1000
+
+	WHILE 1
+
+      dINIT "Dept of field - RESULT"
+      dTEXT "","Lens="+GEN$(focal,4)+"mm  f=1/"+GEN$(fstop,3)+"  d="+GEN$(distance,5)+" "+Choose$:(units$,tounit%),$202
+      dTEXT "Near distance:",GEN$(Convert:(neardist),6)+" "+Choose$:(units$,tounit%),$100
+      IF fardist<=0
+        dTEXT "Far distance:","infinity",$300
+      ELSE
+        dTEXT "Far distance:",GEN$(Convert:(fardist),6)+" "+Choose$:(units$,tounit%),$100
+        dTEXT "Dept of field:",GEN$(Convert:(fardist-neardist),6)+" "+Choose$:(units$,tounit%),$300
+      ENDIF
+rem       dTEXT "Hyperfocal distance:",GEN$(Convert:(hyperdis)/1000,6)+" "+Choose$:(units$,tounit%),$100
+      dCHOICE tounit%,"Unit:",units$
+      dBUTTONS "Cancel",27,"Convert",%c,"Again",13
+
+      dial%=DIALOG
+
+      IF dial%=13
+        BREAK
+      ELSEIF dial%=0 :REM Esc!!!
+        RETURN
+      ENDIF
+      
+	ENDWH
+
+  ENDWH
+
+ENDP
+
+PROC HyperFoC:
+
+  LOCAL format%,hyperdis, dial%
+
+  REM Default unit
+  tounit%=defunit%
+
+  WHILE 1
+
+    dINIT "Hyperfocal calculator"
+    dFLOAT focal,"Focal length (mm):",8,2000
+    dFLOAT fstop,"Aperture (1/..):",1.00,64.00
+    dCHOICE format%,"Film format:","35mm,6x45,6x6,6x7,6x9,4x5,5x7,8x10,movie 16mm,movie 35mm"
+    dCHOICE tounit%,"Result unit:",units$
+    dBUTTONS "Cancel",27,"Calculate",13
+
+    IF DIALOG<>13 :RETURN :ENDIF
+
+    frmunit%=5
+    hyperdis=(focal*focal)/(fstop*CirConf:(format%))
+
+	WHILE 1
+
+      dINIT "Hyperfocal - RESULT"
+      dTEXT "","You need to focus at "+GEN$(Convert:(hyperdis),6)+" "+Choose$:(units$,tounit%)+" to get",$100
+      dTEXT "","depth of field from "+GEN$(Convert:(hyperdis/2),6)+" "+Choose$:(units$,tounit%)+" to infinity.",$300
+      dCHOICE tounit%,"Unit:",units$
+      dBUTTONS "Cancel",27,"Convert",%c,"Again",13
+
+      dial%=DIALOG
+
+      IF dial%=13
+        BREAK
+      ELSEIF dial%=0 :REM Esc!!!
+        RETURN
+      ENDIF
+      
+	ENDWH
+    
+  ENDWH
+
+ENDP
+
+PROC InvDOFCa:
+
+  LOCAL format%,neardist,fardist,dial%
+  LOCAL tmpunit%,tmpndist,tmpfdist,hyperdis,tmpdist
+
+  neardist=8
+  fardist=12
+
+  REM Default unit
+  tmpunit%=defunit%
+
+  WHILE 1
+
+    dINIT "Focus and aperture calculator - Invert DOF"
+    dFLOAT focal,"Focal length (mm):",15,2000
+    dFLOAT neardist,"Near distance:",0,10000
+    dFLOAT fardist,"Far distance:",0,10000
+    dCHOICE tmpunit%,"Unit:",units$
+    dCHOICE format%,"Film format:","35mm,6x45,6x6,6x7,6x9,4x5,5x7,8x10,movie 16mm,movie 35mm"
+    dBUTTONS "Cancel",27,"Calculate",13
+
+    IF DIALOG<>13 :RETURN :ENDIF
+
+    frmunit%=tmpunit%
+    tounit%=5
+
+    tmpndist=(Convert:(neardist))
+    tmpfdist=(Convert:(fardist))
+
+    hyperdis=((focal/tmpndist)+(focal/tmpfdist)-2)/((1/tmpfdist)-(1/tmpndist))
+
+    frmunit%=5
+    tounit%=tmpunit%
+    tmpdist=(hyperdis-focal)/((hyperdis/tmpndist)-1)
+
+    WHILE 1
+
+      dINIT "Focus and aperture - Invert DOF - RESULT"
+      dTEXT "Aperture:","1/"+GEN$((focal*focal)/(hyperdis*CirConf:(format%)),3),$100
+      dTEXT "Set focus to:",GEN$(Convert:(tmpdist),6)+" "+Choose$:(units$,tounit%),$300
+      dCHOICE tounit%,"Unit:",units$
+      dBUTTONS "Cancel",27,"Convert",%c,"Again",13
+
+      dial%=DIALOG
+
+      IF dial%=13
+        BREAK
+      ELSEIF dial%=0 :REM Esc!!!
+        RETURN
+      ENDIF
+
+    ENDWH
+
+  ENDWH
+
+ENDP
+
+PROC LensChoi:
+
+  LOCAL objsize,sizeon
+  LOCAL magnif,tm1unit%,tm2unit%,tmpfocal
+
+  objsize=60
+  sizeon=24
+
+  tounit%=5
+  frmunit%=defunit%
+
+  WHILE 1
+
+    dINIT "Lens choice"
+    dFLOAT distance,"Object distance:",0.01,2000
+    dFLOAT objsize,"Object size:",0.01,2000
+    dCHOICE frmunit%,"Unit (dist. & size):",units$
+    dFLOAT sizeon,"Desired size on film:",0.01,2000
+    dCHOICE tounit%,"Unit:",units$
+    dBUTTONS "Cancel",27,"Calculate",13
+
+    IF DIALOG<>13 :RETURN :ENDIF
+
+    magnif=sizeon/Convert:(objsize)
+    tmpfocal=(magnif/(magnif+1))*Convert:(distance)
+
+    tm1unit%=frmunit%
+    tm2unit%=tounit%
+    frmunit%=tounit%
+    tounit%=5			REM focal mm
+    
+	tmpfocal=Convert:(tmpfocal)
+
+    dINIT "Lens choice - RESULT"
+    dTEXT "Magnification ratio:",Magnif$:(magnif),$100
+    dTEXT "Focal length to use:",GEN$(tmpfocal,5)+" mm",$300
+    dBUTTONS "Cancel",27,"Again",13
+
+    IF DIALOG<>13 :RETURN :ENDIF
+
+    frmunit%=tm1unit%
+    tounit%=tm2unit%
+
+  ENDWH
+
+ENDP
+
+PROC DistChoi:
+
+  LOCAL objsize,sizeon
+  LOCAL magnif,tm1unit%,tm2unit%,dial%
+
+  objsize=60
+  sizeon=24
+
+  frmunit%=defunit%
+  tounit%=5
+
+  WHILE 1
+
+    dINIT "Distane choice"
+    dFLOAT focal,"Focal length (mm):",0.01,2000
+    dFLOAT objsize,"Object size:",0.01,2000
+    dCHOICE frmunit%,"Unit:",units$
+    dFLOAT sizeon,"Desired size on film:",0.01,2000
+    dCHOICE tounit%,"Unit:",units$
+    dBUTTONS "Cancel",27,"Calculate",13
+
+    IF DIALOG<>13 :RETURN :ENDIF
+
+    magnif=sizeon/Convert:(objsize)
+
+    tm1unit%=frmunit%
+    tm2unit%=tounit%
+	frmunit%=tounit%
+
+    distance=((magnif+1)/magnif)*focal
+
+	REM small number
+	tounit%=1
+    IF Convert:(distance)<1
+      tounit%=5
+    ENDIF  
+
+	WHILE 1
+
+      dINIT "Distance choice - RESULT"
+      dTEXT "Magnification ratio:",Magnif$:(magnif),$100
+      dTEXt "Distance:",GEN$(Convert:(distance),5)+" "+Choose$:(units$,tounit%),$300
+      dCHOICE tounit%,"Unit:",units$
+      dBUTTONS "Cancel",27,"Convert",%c,"Again",13
+
+      dial%=DIALOG
+
+      IF dial%=13
+        BREAK
+      ELSEIF dial%=0 :REM Esc!!!
+        RETURN
+      ENDIF
+      
+	ENDWH
+	
+    frmunit%=tm1unit%
+    tounit%=tm2unit%
+
+  ENDWH
+
+ENDP
+
+PROC FlashAp:
+
+  LOCAL dial%
+
+  tounit%=1
+
+  REM Default unit
+  frmunit%=defunit%
+
+  WHILE 1
+
+    dINIT "Flash aperture calculator"
+    dLONG guiden&,"Flash guide number:",1,200
+    dLONG iso&,"Film speed (ISO):",6,6400    
+    dFLOAT distance,"Object distance:",0.1,5000
+    dCHOICE frmunit%,"Unit:",units$
+
+    fstop=guiden&/Convert:(distance)*SQR(flt(iso&)/100)
+
+    dTEXT "Aperture:",GEN$(fstop,4)+" ",$300
+    dBUTTONS "Guide numbers",%g,"Cancel",27,"Calculate",13
+
+    dial%=DIALOG
+
+    IF dial%=%g
+      GuideNum:
+      CONTINUE
+    ELSEIF dial%<>13
+      RETURN
+    ENDIF
+
+  ENDWH
+
+ENDP
+
+PROC FlashBou:
+
+  LOCAL height, dial%
+
+  height=2.4
+
+  REM Default unit
+  tounit%=defunit%
+  frmunit%=defunit%
+
+  WHILE 1
+
+    dINIT "Flash bounce calculator"
+    dFLOAT distance,"Object distance:",0.1,5000
+    dFLOAT height,"Height of ceiling:",0.1,5000
+    dCHOICE frmunit%,"Unit:",units$
+    dCHOICE tounit%,"Result unit:",units$
+    dBUTTONS "Cancel",27,"Calculate",13
+
+    IF DIALOG<>13 :RETURN :ENDIF
+
+	WHILE 1
+
+      dINIT "Flash bounce - RESULT"
+      dTEXT "Flash head angle:",GEN$(DEG(ATAN(height/(distance/2))),2)+"ø",$100
+      dTEXT "Flash total distance:",GEN$(Convert:(2*(SQR(distance/2*(distance/2)+height*height))),5)+" "+Choose$:(units$,tounit%),$300
+      dCHOICE tounit%,"Unit:",units$
+      dBUTTONS "Cancel",27,"Convert",%c,"Again",13
+
+      dial%=DIALOG
+
+      IF dial%=13
+        BREAK
+      ELSEIF dial%=0 :REM Esc!!!
+        RETURN
+      ENDIF
+      
+	ENDWH
+
+  ENDWH
+
+ENDP
+
+PROC Scanning:
+
+  LOCAL scanned,image
+
+  tounit%=3
+  scanned=6
+  frmunit%=3
+  image=800
+
+  WHILE 1
+
+    dINIT "Picture scanning"
+    dFLOAT scanned,"Scanned area:",0.01,5000
+    dCHOICE frmunit%,"Unit:",units$
+    dFLOAT image,"Final image size (pixel):",1,5000
+    dTEXT "Resolution:",GEN$(image/Convert:(scanned),5)+" dpi",$300
+    dBUTTONS "Cancel",27,"Calculate",13
+
+    IF DIALOG<>13 :RETURN :ENDIF
+
+  ENDWH
+
+ENDP
+
+PROC Scaling:
+
+  LOCAL printed,image
+
+  tounit%=3
+  image=800
+  printed=0.5
+
+  WHILE 1
+
+    dINIT "Scaling an image for printing..."
+    dFLOAT image,"Image size (pixel):",1,5000
+    dFLOAT printed,"Printed size:",0.1,5000
+    dCHOICE frmunit%,"Unit:",units$
+    dTEXT "Scaled resolution:",GEN$(image/Convert:(printed),5)+" dpi",$300
+    dBUTTONS "Cancel",27,"Calculate",13
+
+    IF DIALOG<>13 :RETURN :ENDIF
+
+  ENDWH
+
+ENDP
+
+PROC FileSize:
+
+  LOCAL rgbsize,width,height,dpi&,bppchoi%,bpp%
+  LOCAL rgbsize$(9),cmyksiz$(9)
+
+  width=36
+  height=24
+  dpi&=300
+  bppchoi%=5
+  bpp%=24
+
+  tounit%=3
+
+  WHILE 1
+
+    dINIT "File size calculator"
+    dFLOAT width,"Width of the image:",0.1,2000
+    dFLOAT height,"Height of the image:",0.1,2000
+    dCHOICE frmunit%,"Unit:",units$
+    dLONG dpi&,"Resolution (dpi):",50,6000
+    dCHOICE bppchoi%,"Color mode:","1-bit (monotone),1-bit (duotone),4-bit (16 colors),8-bit (256 color),24-bit (16 million),32-bit (high color)"
+    dBUTTONS "Cancel",27,"Calculate",13
+
+    IF DIALOG<>13 :RETURN :ENDIF
+
+    IF bppchoi%=1
+      bpp%=1
+    ELSEIF bppchoi%=2
+      bpp%=2
+    ELSEIF bppchoi%=3 
+      bpp%=4
+    ELSEIF bppchoi%=4 
+      bpp%=8
+    ELSEIF bppchoi%=5 
+      bpp%=24
+    ELSEIF bppchoi%=6 
+      bpp%=32
+    ENDIF
+
+    rgbsize=Convert:(width)*Convert:(height)*dpi&*dpi&*bpp%/(8.0*1024.0) : REM KByte
+
+	IF rgbsize>1024.0
+      rgbsize=rgbsize/1024.0
+      
+      rgbsize$=" MB"
+	  cmyksiz$=" MB"
+    ELSE 
+      rgbsize$=" KB"
+	  cmyksiz$=" KB"
+	ENDIF
+
+    rgbsize$=GEN$(rgbsize,6)+rgbsize$
+       
+    dINIT "File size - RESULT"
+    
+    IF bppchoi%>1
+      dTEXT "File size (RGB):",rgbsize$,$100
+      cmyksiz$=GEN$(rgbsize*1.33,6)+cmyksiz$
+      dTEXT "File size (CMYK):",cmyksiz$,$300
+    ELSE   
+      dTEXT "File size (RGB):",rgbsize$,$300
+    ENDIF
+    dBUTTONS "Cancel",27,"Again",13
+
+    IF DIALOG<>13 :RETURN :ENDIF
+
+  ENDWH
+
+ENDP
+
+PROC ResolCal:
+
+  LOCAL width,finalwid,dpi&,lpichoi%,lpi%
+
+  width=8
+  finalwid=8
+  lpichoi%=4
+  lpi%=150
+
+  WHILE 1
+
+    dINIT "Resolution calculator"
+    dFLOAT width,"Original width:",0.1,2000
+    dFLOAT finalwid,"Final width:",0.1,2000
+    dCHOICE lpichoi%,"Screen (lines/inch):","33,85,133,150,175,200"
+
+    IF lpichoi%=1 : lpi%=33
+    ELSEIF lpichoi%=2 : lpi%=85
+    ELSEIF lpichoi%=3 : lpi%=133
+    ELSEIF lpichoi%=4 : lpi%=150
+    ELSEIF lpichoi%=5 : lpi%=175
+    ELSEIF lpichoi%=6 : lpi%=200
+    ENDIF
+
+    dpi&=lpi%*2*(width/finalwid)
+    dTEXT "Image resolution:",GEN$(dpi&,4)+" dpi",$300
+    dBUTTONS "Cancel",27,"Calculate",13
+
+    IF DIALOG<>13 :RETURN :ENDIF
+
+ ENDWH
+
+ENDP
+
+PROC SecCount:
+
+  LOCAL winid%,long%,sec%,fifth%
+
+  sec%=1
+  fifth%=1
+
+  dINIT "Second ticker"
+  dTEXT "","After you hit ENTER you will hear a tiny",0
+  dTEXT "","beep every second. Use it for better timing",0
+  dTEXT "","of bulb exposures (speed=B). To stop it press",0
+  dTEXT "","any key. Get ready with the camera...",$200
+  dCHOICE long%,"Beep:","Short,Long,5"
+  dBUTTONS "Cancel",27,"Start",13
+
+  IF DIALOG<>13 :RETURN :ENDIF
+
+  BUSY "Press any key..."
+
+  winid%=gCREATE(240,100,150,50,1,1)
+  gBORDER $203
+
+  gAT 8,20 :gFONT 7 :gSTYLE 1
+  gPRINT "Press any key!!! "
+
+  gAT 90,25 :gBUTTON "Stop",1,50,20,0
+
+  gSTYLE 0
+
+  WHILE 1
+    gAT 10,40
+    IF sec%=999
+      sec%=1
+    ENDIF
+    gPRINTB GEN$(sec%,3)+"sec",50,2,2,2,2
+
+    IF long%=1
+      BEEP 1,200
+    ELSEIF long%=3
+      IF fifth%=5
+        BEEP 5,150
+        fifth%=0
+      ELSE
+        BEEP 1,145
+      ENDIF
+    ELSE
+      BEEP 5,200
+    ENDIF
+    PAUSE 5
+    IF KEY<>0
+      BREAK
+    ENDIF
+    PAUSE 5
+    IF KEY<>0
+      BREAK
+    ENDIF
+    PAUSE 5
+    IF KEY<>0
+      BREAK
+    ENDIF
+    PAUSE 5
+    IF KEY<>0
+      BREAK
+    ENDIF
+    sec%=sec%+1
+    fifth%=fifth%+1
+  ENDWH
+
+  gAT 90,25 :gBUTTON "Stop",1,50,20,1
+  gAT 90,25 :gBUTTON "Stop",1,50,20,2
+  PAUSE 5
+  gCLOSE winid%
+  BUSY OFF
+
+ENDP
+
+PROC MConvert:
+
+  LOCAL from
+
+  WHILE 1
+
+    dINIT "Meters <-> Feet <-> Inch <-> cm <-> mm"
+    dFLOAT from,"From:",0.01,10000
+    dCHOICE frmunit%,"Unit:",units$
+    dTEXT "","------------------------",2
+    dCHOICE tounit%,"Unit:",units$
+    dTEXT "Result:",GEN$(Convert:(from),6)+" "+Choose$:(units$,tounit%),$300
+    dBUTTONS "Cancel",27,"Calculate",13
+
+    IF DIALOG<>13 :RETURN :ENDIF
+
+  ENDWH
+
+ENDP
+
+PROC SetFile:(mode$)
+
+  TRAP USE A
+  TRAP CLOSE
+
+  IF mode$="C"
+    TRAP DELETE filenam$
+    TRAP CREATE filenam$,A,date&,descrip$,place$,apertur$,shutter$,lens$,remark$
+  ELSEIF mode$="O"
+    TRAP OPEN filenam$,A,date&,descrip$,place$,apertur$,shutter$,lens$,remark$
+  ENDIF
+
+  IF ERR
+    CLS
+    PRINT ERR$(ERR)
+    GET
+    DestApp:
+  ENDIF
+
+  gIPRINT "Opening ["+filenam$+"]..."
+  SETNAME filenam$
+
+  IF COUNT=0
+    HeaderAd:
+  ENDIF
+
+ENDP
+
+PROC DestApp:
+
+  IF warning%=1
+    IF AreYouSu:<>%y :RETURN :ENDIF
+  ENDIF
+
+  IF saveini%=1
+    SaveIni:
+  ENDIF
+
+  gIPRINT "Bye."
+  PAUSE 20
+  STOP
+
+ENDP
+
+PROC FileNew%:
+
+  dINIT "Create new file"
+  dFILE filenam$,"File:",1+8
+  dBUTTONS "Cancel",27,"Create",13
+
+  IF DIALOG<>13 :RETURN 1 :ENDIF
+
+  SetFile:("C")
+
+  RETURN 0
+
+ENDP
+
+PROC FileOpe%:
+
+  dINIT "Open file"
+  dFILE filenam$,"File:",16+64
+  dBUTTONS "Cancel",27,"Open",13
+
+  IF DIALOG<>13 :RETURN 1 :ENDIF
+
+  SetFile:("O")
+
+  RETURN 0
+
+ENDP
+
+PROC Record%:(mode%)
+
+  REM GLOBAL apertur$(3),shutter$(6),lens$(30)
+  REM GLOBAL apertur$(255),shutter$(255),lens$(255)
+
+  LOCAL date&
+  LOCAL more%,dial%
+
+  REM To detect the first start!!!
+  dial%=999
+
+  IF mode%=0
+    date&=DAYS(DAY,MONTH,YEAR)
+  ELSE
+    date&=A.date&
+    descrip$=A.descrip$
+    place$=A.place$
+    apertur$=A.apertur$
+    shutter$=A.shutter$
+    lens$=A.lens$
+    remark$=A.remark$
+  ENDIF
+
+  IF mode%=0 OR mode%=1
+
+    WHILE 1
+
+      IF addreco%=1 AND mode%=0 AND dial%=999
+        DataHlp1:
+      ENDIF
+
+      more%=newreco%
+
+      dINIT "Index entry - Add/Edit - step I."
+      dDATE date&,"Date:",DAYS(01,01,1900),DAYS(01,01,2099)
+      dEDIT descrip$,"Description:",20
+      dEDIT apertur$,"Aperture (1/..):",3
+      dEDIT shutter$,"Shutter (s):",6
+      dCHOICE more%,"More:","Yes,No"
+      IF mode%=0
+        dBUTTONS "Cancel",27,"Databases",290,"Add/Continue",13
+      ELSE
+        dBUTTONS "Cancel",27,"Add/Continue",13
+      ENDIF
+      dial%=DIALOG
+
+      REM !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+      REM IF dial%=0 AND SEND(PEEKW($38),23)=291
+      REM !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+      IF dial%=290
+        DataHlp1:
+        CONTINUE
+      ELSEIF dial%<>13
+        RETURN 0
+      ENDIF
+
+      IF more%=1
+        dINIT "Index entry - Add/Edit - step II."
+        dEDIT lens$,"Lens:",20
+        dEDIT place$,"Place:",20
+        dEDIT remark$,"Remark (filters):",20
+        dBUTTONS "Cancel",27,"Back",9,"Add",13
+
+        dial%=DIALOG
+
+        IF dial%=9
+          CONTINUE
+        ELSEIF dial%<>13
+          RETURN 0
+        ENDIF
+      ENDIF
+
+      BREAK
+
+    ENDWH
+
+  ENDIF
+
+  A.date&=date&
+  A.descrip$=descrip$
+  A.place$=place$
+  A.apertur$=apertur$
+  A.shutter$=shutter$
+  A.lens$=lens$
+  A.remark$=remark$
+  IF mode%=0
+    APPEND
+    gIPRINT "Added."
+  ELSEIF mode%=1
+    UPDATE
+    gIPRINT "Updated."
+  ELSE
+    UPDATE
+  ENDIF
+
+  RETURN 1
+
+ENDP
+
+PROC RecordA%:
+
+  RETURN Record%:(0)
+
+ENDP
+
+PROC RecordU%:
+
+  RETURN Record%:(1)
+
+ENDP
+
+PROC RecordAU:
+
+  Record%:(2)
+
+ENDP
+
+PROC ToDate$:(secs&,separat$)
+
+  LOCAL tmp%,year%,month%,day%
+  Local return$(10)
+
+  SECSTODATE (secs&-25567)*86400,year%,month%,day%,tmp%,tmp%,tmp%,tmp%
+
+  return$=GEN$(year%,4)+separat$
+
+  IF month%<10 :return$=return$+"0" :ENDIF
+  return$=return$+GEN$(month%,2)+separat$
+
+  IF day%<10 :return$=return$+"0" :ENDIF
+  return$=return$+GEN$(day%,2)
+
+  RETURN return$
+
+ENDP
+
+PROC Header:(mode%)
+
+  GLOBAL filmtyp$(40),camera$(30)
+
+  LOCAL date&,rollid$(30),speed$(30),exp$(2)
+  LOCAL more%,exposur$(11),exposur%
+  LOCAL dial%
+
+  exposur$="12,24,36,40"
+  exposur%=3
+
+  IF mode%=0
+    date&=DAYS(DAY,MONTH,YEAR)
+  ELSE
+    POSITION 1
+    date&=A.date&
+    filmtyp$=A.descrip$
+    rollid$=A.place$
+    speed$=A.lens$
+    camera$=A.remark$
+    exp$=A.apertur$
+  ENDIF
+
+  WHILE 1
+
+    dINIT "Index header - step I."
+    dDATE date&,"Loading date:",DAYS(01,01,1900),DAYS(01,01,2099)
+    dEDIT filmtyp$,"Film type:",20
+    dEDIT speed$,"Speed (ISO) :",20
+    dEDIT camera$,"Camera type:",20
+    dCHOICE more%,"More:","Yes,No"
+    IF COUNT=0
+      dBUTTONS "Databases",290,"Add/Continue",13
+      dial%=DIALOG
+      REM !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+          REM IF dial%=0 AND SEND(PEEKW($38),23)=291
+          REM !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+      IF dial%=290
+        DataHlp2:
+        CONTINUE
+      ELSEIF dial%<>13
+        BEEP 1,150
+        gIPRINT "It's mandatory!!!"
+        CONTINUE
+      ENDIF
+      BREAK
+    ELSE
+      dBUTTONS "Cancel",27,"Add/Continue",13
+      IF DIALOG<>13 :RETURN :ENDIF
+      BREAK
+    ENDIF
+
+  ENDWH
+
+  WHILE 1
+
+    IF more%=1
+
+      dINIT "Index header - step II."
+      IF mode%=0
+        dCHOICE exposur%,"Exposure:",exposur$
+      ELSE
+        dEDIT exp$,"Exposure:",2
+      ENDIF
+      dEDIT rollid$,"Roll ID:",20
+      IF COUNT=0
+        dBUTTONS "Add/Continue",13
+        IF DIALOG<>13
+          BEEP 1,150
+          gIPRINT "It's mandatory!!!"
+          CONTINUE
+        ENDIF
+        BREAK
+      ELSE
+        dBUTTONS "Cancel",27,"Add/Continue",13
+        IF DIALOG<>13 :RETURN :ENDIF
+        BREAK
+      ENDIF
+
+    ENDIF
+
+  ENDWH
+
+  IF mode%=0
+    exp$=Choose$:(exposur$,exposur%)
+  ENDIF
+
+  A.date&=date&
+  A.descrip$=filmtyp$
+  A.place$=rollid$
+  A.lens$=speed$
+  A.remark$=camera$
+  A.apertur$=exp$
+  IF mode%=0
+    APPEND
+    gIPRINT "Added."
+  ELSE
+    UPDATE
+    gIPRINT "Updated."
+    ReOrder:(1,COUNT-1)
+  ENDIF
+
+ENDP
+
+PROC ReOrder:(positio%,count%)
+
+  LOCAL counter%
+
+  counter%=count%
+
+  WHILE counter%<>0
+    POSITION positio%
+    RecordAU:
+    gIPRINT "Reordering ["+GEN$(counter%,3)+"]..."
+    counter%=counter%-1
+  ENDWH
+  gIPRINT "Done."
+
+ENDP
+
+PROC HeaderAd:
+
+  Header:(0)
+
+ENDP
+
+PROC HeaderUp:
+
+  Header:(1)
+
+ENDP
+
+PROC About:
+
+  LOCAL winid%
+
+  BUSY "Press any key..."
+
+  winid%=gCREATE(80+(statusw%/2),20,250,113,1,1)
+  gBORDER $203
+
+  gGREY 0
+  gAT 15,15
+  PutPic:(0,3)
+
+  gGREY 1
+  gAT 15,15
+  PutPic:(1,3)
+
+  gGREY 0
+
+  gAT 75,35 :gFONT 8 :gSTYLE 9
+  gPRINT prognm$
+
+  gAT 90,50 :gFONT 7 :gSTYLE 1
+  gPRINT "Version: "+version$
+
+  gAT 110,59 :gFONT 13 :gSTYLE 0
+  gPRINT "("+compile$+")"
+
+  gAT 52,71 :gFONT 1 :gSTYLE 0
+  gPRINT CHR$(184)+CHR$(169)+" Flex, FleXoft 2000, 2001. HUNGARY"
+
+  gAT 5,75
+  gLINEBY 237,0
+
+  gAT 8,85 :gFONT 1 :gSTYLE 1
+  gPRINT "Mail: "
+  gSTYLE 0
+  gPRINT "GFleischmann@yahoo.com"
+
+  gAT 8,95 :gFONT 1 :gSTYLE 1
+  gPRINT "Web:  "
+  gSTYLE 0
+  gPRINT "http://www.geocities.com/gfleischmann/"
+
+  gGREY 1
+
+  gAT 5,98
+  gLINEBY 237,0
+
+  gGREY 0
+
+  gAT 39,108 :gFONT 1 :gSTYLE 0
+  gPRINT "Many thanks to: "
+  gSTYLE 1
+  gPRINT "Peter Csutora!"
+
+  GET
+
+  gCLOSE winid%
+
+  BUSY OFF
+
+ENDP
+
+PROC LoadPic%:(im%)
+
+  LOCAL f$(128),buf%(100),h%,o%
+
+  f$=CMD$(1)
+  IOOPEN(h%,f$,$400)
+  IOREAD(h%,ADDR(buf%(1)),200)
+  o%=23+(buf%(11) AND $FF)
+  PEEKW(ADDR(buf%(1))+o%)
+  CALL($5f8d,1,o%,0,0,0)
+  IOCLOSE(h%)
+  RETURN gLOADBIT(f$,0,im%)
+
+ENDP
+PROC Str2Int%:(str$)
+
+  LOCAL length%,counter%,int%
+
+  length%=LEN(str$)
+  counter%=0
+
+  WHILE length%<>0
+
+    int%=int%+((10**counter%)*(ASC(MID$(str$,length%,1))-48))
+    length%=length%-1
+    counter%=counter%+1
+
+  ENDWH
+
+  RETURN int%
+
+ENDP
+
+PROC DataHlp1:
+
+  REM GLOBAL apertur$,shutter$,lens$ NEEDED!!!
+
+  LOCAL apertur%,shutter%,lens%
+
+  IF aper$+shut$+lenses$<>""
+    dINIT "Index entry - Help!"
+    IF aper$<>""
+      dCHOICE apertur%,"Aperture:",aper$
+    ENDIF
+    IF shut$<>""
+      dCHOICE shutter%,"Shutter (s):",shut$
+    ENDIF
+    IF lenses$<>""
+      dCHOICE lens%,"Lens (mm):",lenses$
+    ENDIF
+    dBUTTONS "Cancel",27,"Add/Continue",13
+
+    IF DIALOG<>13 :RETURN :ENDIF
+
+    apertur$=ChooseC$:(aper$,apertur%,3)
+    shutter$=ChooseC$:(shut$,shutter%,6)
+    lens$=ChooseC$:(lenses$,lens%,30)
+  ELSE
+    gIPRINT "Create database first! [Menu:Settings/Databases]"
+  ENDIF
+
+ENDP
+
+PROC HeaderPr:
+
+  gFONT 11
+
+  gGREY 0
+  gAT 0,0
+  gFILL 416+statusw%,53,1
+
+  gGREY 1
+  gAT 0,0
+  gFILL 416+statusw%,53,0
+
+  gAT 26,54 :gLINEBY 0,105
+  gAT 70,54 :gLINEBY 0,105
+  gAT 230,54 :gLINEBY 0,105
+  gAT 253,54 :gLINEBY 0,105
+  gAT 312,54 :gLINEBY 0,105
+
+  gGREY 0
+
+  POSITION 1
+
+  gSTYLE 1
+  gAT 2,15
+  gPRINT "Film type: "
+  gSTYLE 0
+  gPRINT A.descrip$
+  IF A.apertur$<>""
+    gPRINT " ("+A.apertur$+"exp)"
+  ENDIF
+  IF A.lens$<>""
+    gPRINT " ISO"+A.lens$+"/"+CHR$(248)+GEN$(ISO2DIN:(FLT(Str2Int%:(A.lens$))),2)
+  ENDIF
+  IF A.place$<>""
+    gPRINT " ("
+    gSTYLE 1
+    gPRINT "Roll ID: "
+    gSTYLE 0
+    gPRINT A.place$+")"
+  ENDIF
+
+  gSTYLE 1
+  gAT 2,32 :gPRINT "Camera type: "
+  gSTYLE 0
+  gPRINT A.remark$
+
+  gAT 293+statusw%,32
+  gSTYLE 1
+  gPRINT "  Date: "
+  gSTYLE 0
+  gPRINT ToDate$:(A.date&,".")+"."
+
+  gFONT 10
+
+  gAT 0,37 :gLINEBY 415+statusw%,0
+
+  gAT 11,50
+  gPRINTB "#",19,2,2,2,2
+  gAT 34,50
+  gPRINTB "date",45,2,2,2,2
+  gAT 72,50
+  gPRINTB "description [place]",159,2,2,2,2
+  gAT 229,50
+  gPRINTB "f/...",30,2,2,2,2
+  gAT 260,50
+  gPRINTB "shutter",50,2,2,2,2
+  gAT 315,50
+  gPRINTB "lens [remark]",100,2,2,2,2
+
+  gAT 0,53 :gLINEBY 415+statusw%,0
+
+ENDP
+
+PROC CloseUp:
+
+  LOCAL tube,magnif,objsize,tmpunit%,tmposize
+  LOCAL dial%
+
+  focal=50
+  tube=25
+  objsize=100
+  
+  tmpunit%=5
+
+  WHILE 1
+
+    tounit%=5
+
+    dINIT "Close-up ratio using bellows or extension tubes"
+    dFLOAT focal,"Lens focal length (mm):",8,1000
+    dFLOAT tube,"Extension tube (mm):",2,1000
+    dFLOAT objsize,"Object size:",0.1,2000
+    dCHOICE tmpunit%,"Unit:",units$
+    dBUTTONS "Cancel",27,"Calculate",13
+
+    IF DIALOG<>13 :RETURN :ENDIF
+
+    magnif=tube/focal
+    frmunit%=tmpunit%
+    tmposize=Convert:(objsize)
+    
+	frmunit%=5
+	
+	REM small number
+	tounit%=1
+    IF Convert:((focal+tube)/magnif)<1
+      tounit%=5
+    ENDIF  
+	
+	WHILE 1
+
+      dINIT "Close-up ratio - RESULT"
+      dTEXT "Magnification ratio: ",Magnif$:(magnif),$100
+      dTEXT "Object size will be: ",GEN$(Convert:(tmposize*magnif),5)+" "+Choose$:(units$,tounit%)+" on film",$100
+      dTEXT "Object distance shuld be: ",GEN$(Convert:((focal+tube)/magnif),5)+" "+Choose$:(units$,tounit%),$300
+      dCHOICE tounit%,"Unit:",units$
+      dBUTTONS "Cancel",27,"Convert",%c,"Again",13
+
+      dial%=DIALOG
+
+      IF dial%=13
+        BREAK
+      ELSEIF dial%=0 :REM Esc!!!
+        RETURN
+      ENDIF
+      
+	ENDWH
+
+  ENDWH
+
+ENDP
+
+PROC Preferen:
+
+  dINIT "Preferences"
+  dCHOICE welcome%,"Welcome screen:","On,Off"
+  dCHOICE addreco%,"New record open with help:","Yes,No"
+  dCHOICE newreco%,"New record's more field:","Yes,No"
+  dCHOICE defunit%,"Default unit:",units$
+  dCHOICE warning%,"Warning when quit:","Yes,No"
+  dBUTTONS "Cancel",27,"Store",13
+
+  IF DIALOG<>13 :RETURN :ENDIF
+
+  REM SaveIni:
+  saveini%=1
+
+ENDP
+
+PROC Database:
+
+  LOCAL dial%
+
+  dial%=%b
+
+  WHILE 1
+
+    IF dial%=%b
+
+      gIPRINT "The separator is: coma!"
+
+      dINIT "Database Editor"
+      dEDIT aper$,"Apertures (1/..):",20
+      dEDIT shut$,"Shutters (s):",20
+      dEDIT lenses$,"Lenses:",20
+      dEDIT cameras$,"Cameras:",20
+      dEDIT films$,"Film types:",20
+      dBUTTONS "Cancel",27,"Next",13
+
+      IF DIALOG<>13 :RETURN :ENDIF
+      
+	ENDIF
+
+    dINIT "Custom film Editor (1)"
+    dEDIT film1$,"Custom film name:",10
+    dLONG film1w&,"Width:",0.1,1000
+    dLONG film1h&,"Height:",0.1, 1000
+    dCHOICE film1u%,"Unit:",units$
+    dBUTTONS "Cancel",27,"Back",%b,"Next",13
+
+    dial%=DIALOG
+    
+	print dial%
+
+    IF dial%=%b
+      CONTINUE
+    ELSEIF dial%=13
+      REM Go ahead
+    ELSE
+      RETURN
+    ENDIF
+
+    dINIT "Custom film Editor (2)"
+    dEDIT film2$,"Custom film name:",10
+    dLONG film2w&,"Width:",0.1,1000
+    dLONG film2h&,"Height:",0.1, 1000
+    dCHOICE film2u%,"Unit:",units$
+    dBUTTONS "Cancel",27,"Back",%b,"Store",13
+
+    dial%=DIALOG
+
+    IF dial%=%b
+      dial%=0
+      CONTINUE
+    ELSEIF dial%=13
+      BREAK 
+	ELSE      
+      RETURN      
+    ENDIF
+
+  EndWh
+
+  REM SaveIni:
+  saveini%=1
+
+ENDP
+
+PROC OpenIni:
+
+  IF NOT EXIST(inifile$)
+
+    REM 1. Welcome screen
+    welcome%=1
+    REM 2. New record open with help
+    addreco%=1
+    REM 3. Default unit
+    defunit%=1
+    REM 4. New record more field
+    newreco%=1
+    REM 5. Warning window when quit
+    warning%=1
+    REM 6. Status window 64-0, 32-1, 0-2
+    statusw%=0
+    REM 7. Apertures
+    aper$="1.4,1.7,2,2.8,3.5,4,4.5,5.6,6.7,8,11,16,22,32,45"
+    REM 8. Shutters
+    shut$="30,15,8,4,2,1,1/2,1/4,1/8,1/15,1/30,1/60,1/125,1/250,1/500,1/1000,1/2000,1/4000,1/8000"
+    REM 9. Lenses
+    lenses$="AF50mm(f1.7),AF28-200mm(3.5-5.6)"
+    REM 10. Cameras
+    cameras$=""
+    REM 11. Film types
+    films$=""
+    REM 12. Reserved
+    printer$=""
+    REM 13. GUIDE number 1 + baud rate
+    guidens$(1)="24" :guidens&(1)=1 :baud%=1
+    REM 14. GUIDE number 2 + parity
+    guidens$(2)="28" :guidens&(2)=2 :parity%=1
+    REM 15. GUIDE number 3 + data bit
+    guidens$(3)="35" :guidens&(3)=3 :data%=1
+    REM 16. GUIDE number 4 + stop bit
+    guidens$(4)="50" :guidens&(4)=4 :stop%=1
+    REM 17. GUIDE number 5 + handshake
+    guidens$(5)="85" :guidens&(5)=5 :hand%=1
+    REM 18. GUIDE number 6
+    guidens$(6)="105" :guidens&(6)=6
+    REM 19. Last filename
+    lastfil$="M:\PHOTO\file.txt"
+    coc%=1
+    REM 20.
+    film1$="Custom film (1)" :film1w&=56 :film1u%=5
+    REM 21.
+    film1h&=56
+    REM 22.
+    film2$="Custom film (2)" :film2w&=56 :film2u%=5
+    REM 23.
+    film2h&=56
+
+    SaveIni:
+
+  ELSE
+
+    OPEN inifile$,B,text$,int%,long&
+    REM 0.
+    IF B.text$<>"PhotoPal configuration file"
+      ALERT(prognm$+" v"+version$+" (comp: "+compile$+")","FATAL ERROR: Wrong config file!!!")
+      STOP
+    ENDIF
+    NEXT
+    REM 1.
+    welcome%=B.int% :NEXT
+    IF welcome%=1
+      welcome%=999 :REM Welcome message only the first time
+    ENDIF
+    REM !!!
+    REM IF B.int%=2
+    REM  welcome%=2
+    REM ELSE
+    REM  welcome%=999
+    REM ENDIF
+    REM NEXT
+    REM 2.
+    addreco%=B.int% :NEXT
+    REM 3.
+    defunit%=B.int% :NEXT
+    REM 4.
+    newreco%=B.int% :NEXT
+    REM 5.
+    warning%=B.int% :NEXT
+    REM 6.
+    statusw%=B.int% :NEXT
+    REM 7.
+    aper$=B.text$ :NEXT
+    REM 8.
+    shut$=B.text$ :NEXT
+    REM 9.
+    lenses$=B.text$ :NEXT
+    REM 10.
+    cameras$=B.text$ :NEXT
+    REM 11.
+    films$=B.text$ :NEXT
+    REM 12. Reserved
+    printer$=B.text$ :NEXT
+    REM 13.
+    guidens$(1)=B.text$ :guidens&(1)=B.long& :baud%=B.int% :NEXT
+    REM 14.
+    guidens$(2)=B.text$ :guidens&(2)=B.long& :parity%=B.int% :NEXT
+    REM 15.
+    guidens$(3)=B.text$ :guidens&(3)=B.long& :data%=B.int% :NEXT
+    REM 16.
+    guidens$(4)=B.text$ :guidens&(4)=B.long& :stop%=B.int% :NEXT
+    REM 17.
+    guidens$(5)=B.text$ :guidens&(5)=B.long& :hand%=B.int% :NEXT
+    REM 18.
+    guidens$(6)=B.text$ :guidens&(6)=B.long& :NEXT
+    REM 19. Last file
+    coc%=B.int%
+    lastfil$=B.text$ :NEXT
+    REM 20.
+    film1$=B.text$ :film1w&=B.long& :film1u%=B.int% :NEXT
+    REM 21.
+    film1h&=B.long& :NEXT
+    REM 22.
+    film2$=B.text$ :film2w&=B.long& :film2u%=B.int% :NEXT
+    REM 23.
+    film2h&=B.long& :NEXT
+    REM 24.    
+    REM THE END.
+
+    CLOSE
+
+  ENDIF
+
+  frmunit%=defunit%
+
+ENDP
+
+PROC SaveIni:
+
+  gIPRINT "Saving configuration ["+inifile$+"]..."
+
+  TRAP DELETE inifile$
+  TRAP CREATE inifile$,B,text$,int%,long&
+  USE B
+  REM 0.
+  B.text$="PhotoPal configuration file" :APPEND
+  B.text$=""
+  REM 1.
+  B.int%=welcome% :APPEND
+  REM 2.
+  B.int%=addreco% :APPEND
+  REM 3.
+  B.int%=defunit% :APPEND
+  REM 4.
+  B.int%=newreco% :APPEND
+  REM 5.
+  B.int%=warning% :APPEND
+  REM 6.
+  B.int%=statusw% :APPEND
+  REM 7.
+  B.text$=aper$ :APPEND
+  REM 8.
+  B.text$=shut$ :APPEND
+  REM 9.
+  B.text$=lenses$ :APPEND
+  REM 10.
+  B.text$=cameras$ :APPEND
+  REM 11.
+  B.text$=films$ :APPEND
+  REM 12.
+  B.text$=printer$ :APPEND
+  REM 13.
+  B.text$=guidens$(1) :B.long&=guidens&(1) :B.int%=baud% :APPEND
+  REM 14.
+  B.text$=guidens$(2) :B.long&=guidens&(2) :B.int%=parity% :APPEND
+  REM 15.
+  B.text$=guidens$(3) :B.long&=guidens&(3) :B.int%=data% :APPEND
+  REM 16.
+  B.text$=guidens$(4) :B.long&=guidens&(4) :B.int%=stop% :APPEND
+  REM 17.
+  B.text$=guidens$(5) :B.long&=guidens&(5) :B.int%=hand% :APPEND
+  REM 18.
+  B.text$=guidens$(6) :B.long&=guidens&(6) :APPEND
+  REM 19.
+  B.int%=coc%
+  B.text$=lastfil$ :APPEND
+  REM 20.
+  B.text$=film1$ :B.long&=film1w& :B.int%=film1u% :APPEND
+  REM 21.
+  B.long&=film1h& :APPEND
+  REM 22.
+  B.text$=film2$ :B.long&=film2w& :B.int%=film2u% :APPEND
+  REM 23.
+  B.long&=film2h& :APPEND
+  REM 24.
+  B.text$="END." :APPEND
+
+  CLOSE
+
+ENDP
+
+PROC DataHlp2:
+
+  REM GLOBAL filmtyp$,camera$
+
+  LOCAL camera%,film%
+
+  IF films$+cameras$<>""
+    dINIT "Index header - Help!"
+    IF films$<>""
+      dCHOICE film%,"Film type:",films$
+    ENDIF
+    IF films$<>""
+      dCHOICE camera%,"Camera type:",cameras$
+    ENDIF
+    dBUTTONS "Cancel",27,"Add/Continue",13
+
+    IF DIALOG<>13 :RETURN :ENDIF
+
+    filmtyp$=ChooseC$:(films$,film%,40)
+    camera$=ChooseC$:(cameras$,camera%,30)
+  ELSE
+     BEEP 1,150
+     gIPRINT "Create database first! [Menu:Settings/Databases]"
+  ENDIF
+
+ENDP
+
+PROC Choose$:(data$,index%)
+
+  LOCAL return$(255),count%,length%,idx%,tmp$(1)
+
+  length%=LEN(data$)
+  count%=1
+  idx%=0
+
+  WHILE count%<=length%
+
+    tmp$=MID$(data$,count%,1)
+    IF tmp$=","
+      idx%=idx%+1
+      IF idx%=index% :BREAK :ENDIF
+      return$=""
+    ELSE
+     return$=return$+tmp$
+    ENDIF
+
+    count%=count%+1
+
+  ENDWH
+
+  RETURN return$
+
+ENDP
+
+PROC ChooseC$:(data$,index%,long%)
+
+  RETURN LEFT$(Choose$:(data$,index%),long%)
+
+ENDP
+
+PROC StatusWi:
+
+  IF statusw%=64
+    STATUSWIN ON,0
+  ELSEIF statusw%=32
+    STATUSWIN ON,1
+  ELSE
+    STATUSWIN ON,2
+  ENDIF
+  FONT 5,8
+
+ENDP
+
+PROC AreYouSu:
+
+    dINIT
+    dTEXT "","Are you sure?",$202
+    dBUTTONS "No",%N,"Yes",%Y
+
+    RETURN DIALOG
+
+ENDP
+
+PROC Print:
+
+  LOCAL tmpposi%
+  LOCAL file$(128)
+
+  REM default file name
+  file$="M:\PHOTO\printout.txt"
+  
+  tmpposi%=POS
+
+  IF LEFT$(printer$,4)<>"PAR:" OR LEFT$(printer$,4)<>"TTY:"
+  
+    WHILE 1
+    
+      dINIT "Choose file"
+      dFILE file$,"File:",1
+      dBUTTONS "Cancel",27,"Open",13
+
+      IF DIALOG<>13 :RETURN :ENDIF
+
+      IF file$=""
+        CONTINUE
+      ELSE
+        printer$=file$
+        BREAK
+      ENDIF  
+
+    ENDWH
+    
+  ENDIF 
+
+  gIPRINT "Printing..."
+  
+  LOPEN printer$
+
+  dINIT "List options:"
+REM  dTEXT "","Long or short?",$202
+  dBUTTONS "Long",%l,"Short",%s
+
+  IF DIALOG=%l
+    PrintL:
+  ELSE
+    PrintS:  
+  ENDIF
+
+  LPRINT CHR$(12); :LCLOSE
+  
+  POSITION tmpposi%
+
+  gIPRINT "Finished."
+
+ENDP
+
+PROC SetPrint:
+
+  LOCAL port%
+  LOCAL ports$(17)
+
+  ports$="PAR:A,TTY:A,TTY:I"
+
+  dINIT "Printer Setup"
+  dCHOICE port%,"Port:","Parallel,Serial,IrDA,File"
+  dBUTTONS "Cancel",27,"Store",13
+
+  IF DIALOG<>13 :RETURN :ENDIF
+
+  IF port%=4
+    printer$="FILE"
+  ELSE  
+    printer$=Choose$:(ports$,port%)
+  ENDIF
+
+  REM SaveIni:
+  saveini%=1
+
+ENDP
+
+PROC SetSeria:(baud%,parity%,data%,stop%,hand%,term&)
+
+REM Baud =  50   75   110  134  150  300  600  1200 1800 2000 2400 3600 4800 7200 9600 19200 38400 57600
+REM value = 1    2    3    4    5    6    7    8    9    10   11   12   13   14   15   16    17    18
+REM
+REM Parity = NONE EVEN ODD
+REM value =  0    1    2
+REM
+REM Data bits = 5, 6, 7 or 8
+REM
+REM Stop bits = 2 or 1
+REM
+REM Handshaking = ALL  NONE  XON  RTS  XON+RTS  DSR  XON+DSR  RTS+DSR
+REM value =       11   4     7    0    3        12   15       8
+REM
+REM (baud%,parity%,data%,stop%,hand%,&0)
+REM The final parameter, which should be "&0" here, is only used when reading from the port.
+
+  LOCAL frame%,srchar%(6),dummy%,err%
+
+  frame%=data%-5
+  IF stop%=2 :frame%=frame% OR 16 :ENDIF
+  IF parity% :frame%=frame% OR 32 :ENDIF
+  srchar%(1)=baud% OR (baud%*256)
+  srchar%(2)=frame% OR (parity%*256)
+  srchar%(3)=(hand% AND 255) OR $1100
+  srchar%(4)=$13
+  POKEL ADDR(srchar%(5)),term&
+  err%=IOW(-1,7,srchar%(1),dummy%)
+  IF err% :RAISE err% :ENDIF
+
+ENDP
+PROC CirConf:(circonf%)
+
+  REM circonf=focal/1720
+
+  IF circonf%=1
+    RETURN 0.03   :REM 35mm
+  ELSEIF circonf%=2
+    RETURN 0.06   :REM 6x45
+  ELSEIF circonf%=3
+    RETURN 0.065  :REM 6x6
+  ELSEIF circonf%=4
+    RETURN 0.65   :REM 6x7
+  ELSEIF circonf%=5
+    RETURN 0.75   :REM 6x9
+  ELSEIF circonf%=6
+    RETURN 0.15   :REM 4x5in
+  ELSEIF circonf%=7
+    RETURN 0.2    :REM 5x7in
+  ELSEIF circonf%=8
+    RETURN 0.3    :REM 8x10
+  ELSEIF circonf%=9
+    RETURN 0.013  :REM movie 16
+  ELSEIF circonf%=10
+    RETURN 0.036  :REM movie 35
+  ENDIF
+
+ENDP
+
+PROC PutPic:(picnum%, mode%)
+
+  LOCAL winid%,picid%,height%,width%
+
+  winid%=gIDENTITY
+
+  picid%=LoadPic%:(picnum%)
+  height%=gHEIGHT
+  width%=gWIDTH
+  gUSE winid%
+  gCOPY picid%,0,0,width%,height%,mode%
+  gCLOSE picid%
+
+ENDP
+
+PROC EVDiff2:
+
+  LOCAL iso1%,iso2%,fstop1,fstop2,speed1,speed1%,speed2,speed2%,diff
+  LOCAL evdiff1%,evdiff2%
+  
+  LOCAL sptmp1,sptmp2
+    
+  LOCAL ev(13)
+
+  LOCAL dial%
+  
+  iso1%=13 : iso2%=13
+  fstop1=1.7 : fstop2=1.7
+  speed1=250 : speed2=250
+  evdiff1%=7 : evdiff2%=7  
+
+  ev(1)=-3 : ev(2)=-2 : ev(3)=-1 : ev(4)=-0.666 : ev(5)=-0.5 : ev(6)=-0.333
+  ev(7)=0
+  ev(8)=0.333 : ev(9)=0.5 : ev(10)=0.666 : ev(11)=1 : ev(12)=2 : ev(13)=3
+
+  WHILE 1
+
+    WHILE 1
+
+      dINIT "EV difference calculator I."
+      dCHOICE iso1%,"Film speed (ISO):","6,8,10,12,16,20,25,32,40,50,64,80,100,125,160,200,250,320,400,500,640,800,1000,1250,1600,2000,2500,3200,4000,5000,6400"
+      dFLOAT fstop1,"Aperture (1/..):",1.00,64.00
+      dCHOICE speed1%,"Shutter I:","1/...(s),...(s)"
+      dFLOAT speed1,"Shutter II:",1.00,12000.00
+      dCHOICE evdiff1%,"EV diff:","-3,-2,-1,-2/3,-1/2,-1/3,0,+1/3,+1/2,+2/3,+1,+2,+3"
+      dBUTTONS "Cancel",27,"Continue",13
+
+      IF DIALOG<>13 :RETURN :ENDIF
+
+      dINIT "EV difference calculator II."
+      dCHOICE iso2%,"Film speed (ISO):","6,8,10,12,16,20,25,32,40,50,64,80,100,125,160,200,250,320,400,500,640,800,1000,1250,1600,2000,2500,3200,4000,5000,6400"      
+      dFLOAT fstop2,"Aperture (1/..):",0,64.00
+      dCHOICE speed2%,"Shutter I:","1/...(s),...(s)"
+      dFLOAT speed2,"Shutter II:",1.00,12000.00
+      dCHOICE evdiff2%,"EV diff:","-3,-2,-1,-2/3,-1/2,-1/3,0,+1/3,+1/2,+2/3,+1,+2,+3"    
+      dBUTTONS "Cancel",27,"Back",9,"Calculate",13
+
+      dial%=DIALOG
+
+      IF dial%=9
+        CONTINUE
+      ELSEIF dial%<>13
+        RETURN
+      ELSE
+        BREAK  
+      ENDIF
+  
+    ENDWH
+
+    IF speed1%=1
+      sptmp1=1.0/speed1
+    ELSE  
+      sptmp1=speed1
+    ENDIF  
+
+    IF speed2%=1
+      sptmp2=1.0/speed2
+    ELSE  
+      sptmp2=speed2
+    ENDIF  
+
+    diff=(ev(evdiff1%)-(1+(iso1%-1)*0.333)-(LOG(fstop1**2/sptmp1)/LOG(2)))-(ev(evdiff2%)-(1+(iso2%-1)*0.333)-(LOG(fstop2**2/sptmp2)/LOG(2)))
+
+    dINIT "EV difference - RESULT"
+    IF diff>0.166
+      dTEXT "","The first set of settings yields",$100
+      dTEXT "",ev$:(diff)+" EV units brighter result.",$300
+    ELSEIF diff<-0.166
+      dTEXT "","The second set of settings yields",$100
+      dTEXT "",ev$:(diff)+" EV units brighter result.",$300
+    ELSE
+      dTEXT "","The two sets of settings yield",$100
+      dTEXT "","equal bright result.",$300
+    ENDIF
+ 
+    dBUTTONS "Cancel",27,"Again",13
+
+    IF DIALOG<>13 :RETURN :ENDIF
+
+  ENDWH
+  
+ENDP
+PROC EV$:(EV)
+
+    LOCAL num,tmp$(3)
+
+    num=ABS(EV)-IABS(EV)
+
+	IF num<0.166
+	  tmp$="0"
+	ELSEIF num>0.166 AND num<0.416
+	  tmp$="1/3"
+	ELSEIF num>0.416 AND num<0.583
+	  tmp$="1/2"
+	ELSEIF num>0.583 AND num<0.833
+	  tmp$="2/3"
+    ELSE
+      tmp$="1"
+    ENDIF  
+
+    IF tmp$="1"
+      RETURN GEN$(IABS(EV)+1,3)
+    ELSEIF tmp$="0"
+      RETURN GEN$(IABS(EV),3)
+    ELSEIF IABS(EV)=0
+      RETURN tmp$ 
+    ELSE
+      RETURN GEN$(IABS(EV),3)+" "+tmp$
+    ENDIF
+
+ENDP
+
+PROC RiseSet:
+
+  REM Demonstration of using the WLD: device interface
+  REM from OPL to extract sunrise/sunset information
+  REM for a city.
+  REM
+  REM This code is public-domain.
+  REM
+  REM Ajai Khattri (ajai@nwt.com)
+
+  LOCAL h%, ctyinfo%(44) :REM WLD: device info
+  LOCAL cd%(20) :REM country data
+  LOCAL dst% :REM daylight saving time flag
+  LOCAL lat,long,below%,date&
+  LOCAL sr&,ss&,tr&,ts& :REM destination data for sunrsst:
+  
+  LOCAL difgmt%
+  
+  LOCAL city$(20)
+
+  REM get our location
+  IOOPEN(h%,"WLD:",0)
+  IOW(h%,15,#ADDR(ctyinfo%()),#0) :REM get home city
+  IOW(h%,22,#ADDR(ctyinfo%()),#0) :REM get city info
+  IOCLOSE(h%)
+  REM get current daylight saving setting (for Home)
+  CALL($058B,ADDR(cd%()))
+  dst%=PEEKB(UADD(ADDR(cd%()),25)) AND 1
+  dst%=dst%+1:REM so 1=no,2=yes
+
+  REM Name of the city
+  CALL ($A1,0,20,0,addr(ctyinfo%()),UADD(addr(city$),1))
+  h%=1
+  WHILE PEEKB(UADD(ADDR(city$),h%))>33 AND PEEKB(UADD(ADDR(city$),h%))<165 
+    h%=h%+1
+  ENDWH
+  POKEB ADDR(city$),h%-1 :REM legth of the string
+ 
+  REM initialise
+  lat =ctyinfo%(24)/60.0
+  long=ctyinfo%(25)/60.0
+  
+  REM correction timezone <> longitude/15
+  difgmt%=ctyinfo%(23)/60 : rem minutes ahead GMT in std
+  difgmt%=difgmt%+int(long/15)
+  IF long<0
+	difgmt%=difgmt%-1
+  endif
+  difgmt%=difgmt%*3600
+
+  below%=1
+  date&=DAYS(DAY,MONTH,YEAR)
+
+  lat=(INTF(lat*10000.0))/10000.0
+  long=(INTF(long*10000.0))/10000.0
+
+  DO
+  
+    BUSY "Calculating...",3
+    sunrsst:(ADDR(sr&),lat,long,INT(below%*6),date&)
+	tr&=tr&+difgmt%
+	sr&=sr&+difgmt%
+	ss&=ss&+difgmt%
+	ts&=ts&+difgmt%
+    IF dst% = 2
+      sr& = sr& + 3600
+      ss& = ss& + 3600
+      tr& = tr& + 3600
+      ts& = ts& + 3600
+    ENDIF
+    BUSY OFF
+    
+    IF city$<>""
+      dINIT "Home city: "+city$
+    ELSE
+      dINIT "Sunrise/set and Moonphase - RESULT"
+    ENDIF  
+    dTEXT "Sun:",CHR$(24)+ToTime$:(sr&)+" ... "+CHR$(25)+ToTime$:(ss&),$100
+    dTEXT "Twilight:",CHR$(24)+ToTime$:(tr&)+" ... "+CHR$(25)+ToTime$:(ts&),$300
+    dTEXT "Moonphase:",moonph$:(date&),$300
+    dBUTTONS "Cancel",27,"New parameters",13
+
+    IF DIALOG<>13 :RETURN :ENDIF
+
+    city$=""
+
+    dINIT "Custom city/date settings"
+    dDATE date&, "Date", 0, DAYS( 1, 1, 2100 )
+    dCHOICE dst%, "Summer time", "Off,On"
+    dCHOICE below%, "Twilight", "Civil,Nautical,Astronomical"
+    dFLOAT lat, "Latitude +=N,-=S", -60, 60
+    dFLOAT long, "Longitude +=W,-=E", -180, 180
+    dBUTTONS "Cancel",27,"Calculate",13
+    
+  UNTIL DIALOG<>13
+   
+ENDP
+
+PROC SunRsSt:( ptr%, lat, long, below&, d& ) REM Calculate sunrise/sunset times (and twilight)
+
+REM Calculate sunrise/sunset
+REM Code ported from:
+REM   Sunrise/Sunset by Michael E Bakich
+REM   Nibble Magazine November 1986
+REM ptr% points to the destination data:
+REM NOTE: all times are given as per dTIME (seconds after midnight)
+REM   sunrise& - Sunrise
+REM   sunset&  - Sunset
+REM   twlghtr& - twilight start (rising)
+REM   twlghts& - twilight end (setting)
+REM lat  - Latitude of location +ve=N,-ve=S
+REM long - Longitude of location +ve=W,-ve=E
+REM below& - Position of sun below horizon in degrees for twilight calculation
+REM           6 = civil twilight
+REM          12 = nautical twilight
+REM          18 = astronomical twilight
+REM d& - Date for calculation (as per DAYS - days since 1-Jan-1900)
+
+REM Lookup values:
+
+	LOCAL l(50),al(50),nu(50)
+	LOCAL dummy%,year%,yrday%
+	LOCAL P,Ll,s&,B,JD,U,XT,I,XX,LX,N,EP,LA,DE,E,YY,HS,HT,SR,SS,TR,TS
+
+REM LOCAL YR
+
+REM initialise lookup tables
+	 l( 1)=403406     : l( 2)=195207      : l( 3)=119433      : l( 4)=112392      : l( 5)=3891
+	 l( 6)=2819       : l( 7)=1721        : l( 8)=0           : l( 9)=660         : l(10)=350
+	 l(11)=334        : l(12)=314         : l(13)=268         : l(14)=242         : l(15)=234
+	 l(16)=158        : l(17)=132         : l(18)=129         : l(19)=114         : l(20)=99
+	 l(21)=93         : l(22)=86          : l(23)=78          : l(24)=72          : l(25)=68
+	 l(26)=64         : l(27)=46          : l(28)=38          : l(29)=37          : l(30)=32
+	 l(31)=29         : l(32)=28          : l(33)=27          : l(34)=27          : l(35)=25
+	 l(36)=24         : l(37)=21          : l(38)=21          : l(39)=20          : l(40)=18
+	 l(41)=17         : l(42)=14          : l(43)=13          : l(44)=13          : l(45)=13
+	 l(46)=12         : l(47)=10          : l(48)=10          : l(49)=10          : l(50)=10
+	al( 1)=4.721964   :al( 2)=5.937458    :al( 3)=1.115589    :al( 4)=5.781616    :al( 5)=5.5474
+	al( 6)=1.512      :al( 7)=4.1897      :al( 8)=1.163       :al( 9)=5.415       :al(10)=4.315
+	al(11)=4.553      :al(12)=5.198       :al(13)=5.989       :al(14)=2.911       :al(15)=1.423
+	al(16)=0.061      :al(17)=2.317       :al(18)=3.193       :al(19)=2.828       :al(20)=0.52
+	al(21)=4.65       :al(22)=4.35        :al(23)=2.75        :al(24)=4.5         :al(25)=3.23
+	al(26)=1.22       :al(27)=0.14        :al(28)=3.44        :al(29)=4.37        :al(30)=1.14
+	al(31)=2.84       :al(32)=5.96        :al(33)=5.09        :al(34)=1.72        :al(35)=2.56
+	al(36)=1.92       :al(37)=0.09        :al(38)=5.98        :al(39)=4.03        :al(40)=4.27
+	al(41)=0.79       :al(42)=4.24        :al(43)=2.01        :al(44)=2.65        :al(45)=4.98
+	al(46)=0.93       :al(47)=2.21        :al(48)=3.59        :al(49)=1.5         :al(50)=2.55
+	nu( 1)=1.621043   :nu( 2)=62830.348067:nu( 3)=62830.821524:nu( 4)=62829.634302:nu( 5)=125660.5691
+	nu( 6)=125660.9845:nu( 7)=62832.4766  :nu( 8)=0.813       :nu( 9)=125659.31   :nu(10)=57533.85
+	nu(11)=-33.931    :nu(12)=777137.715  :nu(13)=78604.191   :nu(14)=5.412       :nu(15)=39302.098
+	nu(16)=-34.861    :nu(17)=115067.698  :nu(18)=15774.337   :nu(19)=5296.67     :nu(20)=58849.27
+	nu(21)=5296.11    :nu(22)=-3980.7     :nu(23)=52237.69    :nu(24)=55076.47    :nu(25)=261.08
+	nu(26)=15773.85   :nu(27)=188491.03   :nu(28)=-7756.55    :nu(29)=264.89      :nu(30)=117906.27
+	nu(31)=55075.75   :nu(32)=-7961.39    :nu(33)=188489.81   :nu(34)=2132.19     :nu(35)=109771.03
+	nu(36)=54868.56   :nu(37)=25443.93    :nu(38)=-55731.43   :nu(39)=60697.74    :nu(40)=2132.79
+	nu(41)=109771.63  :nu(42)=-7752.82    :nu(43)=188491.91   :nu(44)=207.81      :nu(45)=29424.63
+	nu(46)=-7.99      :nu(47)=46941.14    :nu(48)=-68.29      :nu(49)=21463.25    :nu(50)=157208.4
+	
+REM Applesoft notes:
+REM FN A(X) = convert X degrees into radians RAD(X)
+REM FN B(X) = convert X radians into degrees DEG(X)
+REM FN C(X) = ACOS(X)
+REM FN D(X) = ASIN(X)
+REM I  = Day of month
+REM J  = Month of year
+REM EP = Earth's axis tilt
+REM N  = Earth's orbital plane tilt?
+REM LX = Solar longitude
+REM P  = Entered latitude
+REM Ll  = Entered longitude
+
+	REM get and range check lat and long
+	P = lat
+	IF P < -60 :P = -60 :ENDIF
+	IF P >  60 :P =  60 :ENDIF
+	Ll = long
+	IF Ll < -180 :Ll = -180 :ENDIF
+	IF Ll >  180 :Ll =  180 :ENDIF
+	P = RAD( P )
+	Ll = Ll / 15 - INT( Ll / 15 )
+	IF Ll < 0 :Ll = Ll + 1 :ENDIF
+	
+	REM get and range check year
+	s& = ( d& - DAYS( 1, 1, 1970 ) ) * 24 * 60 * 60
+	IF s& < 0 :s& = 0 :ENDIF
+	SECSTODATE s&, year%, dummy%, dummy%, dummy%, dummy%, dummy%, yrday%
+	B = 2 - INT( year% / 100 ) + INT( INT( year% / 100 ) / 4 )
+	JD = INT( 365.25 * year% ) + 428.4014 + 1720994.5 + B
+	U = ( JD - 2451545 ) / 3652500
+	XT = 0
+	I = 1
+	WHILE I <= 50
+		XX = L( I ) * SIN( AL( I ) + NU( I ) * U )
+		XT = XT + XX
+		I = I + 1
+	ENDWH
+	LX = 4.9353929 + 62833.196168 * U + XT * 0.0000001
+	
+	N = RAD( 0.985647 ) :EP = RAD( 23.441754 )
+	
+	LA = yrday% * N + LX
+	DE = ASIN( SIN( EP ) * SIN( LA ) )
+	E =    -105.3 * SIN(     LA )
+	E = E + 596.2 * SIN( 2 * LA )
+	E = E +   4.3 * SIN( 3 * LA )
+	E = E -  12.7 * SIN( 4 * LA )
+	E = E - 429.2 * COS(     LA )
+	E = E -   2.1 * COS( 2 * LA )
+	E = E +  19.3 * COS( 3 * LA )
+	HS = ACOS( ( COS( RAD( 90.83333333 ) ) - SIN( P ) * SIN( DE ) ) / ( COS( P ) * COS( DE ) ) )
+	YY =       ( COS( RAD( 90 + below& ) ) - SIN( P ) * SIN( DE ) ) / ( COS( P ) * COS( DE ) )
+	IF ABS( YY ) > 1
+		YY = 0 :HT = 0
+	ELSE
+		HT = ACOS( YY )
+	ENDIF
+	HS = DEG( HS ) / 15
+	HT = DEG( HT ) / 15
+	SR = 12 - HS - E / 3600 + Ll
+	SS = 12 + HS - E / 3600 + Ll
+	TR = 12 - HT - E / 3600 + Ll
+	TS = 12 + HT - E / 3600 + Ll
+	
+	IF ptr%
+		POKEL UADD( ptr%,  0 ), INT( SR * 3600 )
+		POKEL UADD( ptr%,  4 ), INT( SS * 3600 )
+		POKEL UADD( ptr%,  8 ), INT( TR * 3600 )
+		POKEL UADD( ptr%, 12 ), INT( TS * 3600 )
+	ENDIF
+	
+ENDP
+
+PROC MoonPh$:(tag&)
+  rem moonphase j= 0..29  0=new  14=full
+	
+  LOCAL l&,n&,j&, jjjj&,m&,t&,j
+  
+  LOCAL t%,m%,jjjj%
+
+  j&=tag&+2415021 : rem diff JD to 1.1.1900
+  l&=j&+68569
+  n&=4*l&/146097
+  l&=l&-(n&*146097+3)/4
+  jjjj&=4000*(l&+1)/1461001
+  l&=l&-1461*jjjj&/4+31
+  m&=80*l&/2447
+  t&=l&-2447*m&/80
+  l&=m&/11
+  m&=m&+2-12*l&
+  jjjj&=100*(n&-49)+l&+jjjj&
+
+  t%=t&
+  m%=m&
+  jjjj%=jjjj&
+
+  j=mod:(jjjj%-int(jjjj%/100.0)*100.0,19.0)
+  if j>9
+	j=j-19
+  endif
+	j=mod:((j*11.0),30.0) + m% + t%
+  if m%<3
+	j=j+2
+  endif
+	j=j-4
+  if jjjj%>1999
+	j=j-4.3
+  endif
+  j=j+30
+  j=mod:(j,30.0)
+  
+  if j=0
+	RETURN "NEW MOON."
+  elseif j>=14 AND j<=15
+	RETURN "FULL MOON."
+  elseif j<14
+	RETURN FIX$(100-((14-j)*100/14),0,3)+"% visible, "+fix$(14-j,0,2)+" day(s) to FULL MOON."
+  else 
+	RETURN FIX$((30-j)*100/14,0,3)+"% visible, "+fix$(30-j,0,2)+" day(s) to NEW MOON."
+  endif
+
+ENDP
+
+PROC Mod:(zahl,teiler)
+  REM modulo
+  RETURN zahl-intf(zahl/teiler)*teiler
+ENDP
+PROC ToTime$:(secs&)
+
+  LOCAL tmp%,hour%,minute%
+  Local return$(5)
+
+  SECSTODATE secs&,tmp%,tmp%,tmp%,hour%,minute%,tmp%,tmp%
+ 
+  IF hour%<10 :return$="0" :ENDIF
+  return$=return$+GEN$(hour%,2)+":"
+
+  IF minute%<10 :return$=return$+"0" :ENDIF
+  return$=return$+GEN$(minute%,2)
+
+  RETURN return$
+
+ENDP
+
+PROC PrintL:
+
+  LOCAL counter%,length%,lpart1%,lpart2%
+
+  counter%=1
+  
+  REM longest parts
+  POSITION 1
+
+  DO
+    length%=LEN(A.descrip$+A.place$)
+    IF length%>lpart1%
+      lpart1%=length%
+    ENDIF  
+    length%=LEN(A.lens$+A.remark$)
+    IF length%>lpart2%
+      lpart2%=length%
+    ENDIF  
+    NEXT
+  UNTIL EOF
+
+  lpart1%=lpart1%+3
+  IF lpart1%<30
+    lpart1%=30
+  ENDIF  
+  lpart2%=lpart2%+3
+  IF lpart2%<20
+    lpart2%=20
+  ENDIF  
+  length%=lpart1%+lpart2%+28
+
+  REM Header
+  POSITION 1
+
+  LPRINT "Film type: "+A.descrip$;
+ 
+  IF A.apertur$<>""
+    LPRINT " ("+A.apertur$+"exp)";
+  ENDIF
+  IF A.lens$<>""
+    LPRINT " ISO"+A.lens$+"/"+CHR$(248)+GEN$(ISO2DIN:(FLT(Str2Int%:(A.lens$))),2);
+  ENDIF
+  IF A.place$<>""
+    LPRINT " (Roll ID: "+A.place$+")";
+  ENDIF
+  LPRINT
+
+  LPRINT "Camera type: "+A.remark$
+  LPRINT "Date: "+ToDate$:(A.date&,".")+"."
+  LPRINT
+  NEXT
+  
+  REM              1         2         3         4         5         6         7         8         9        10
+  REM     1234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890
+  LPRINT "+"+REPT$("-",length%)+"+"
+  LPRINT "| #|   date   |"+CutFill$:("  description [place]         ",lpart1%)+"|f/..|shutter|"+CutFill$:("  lens [remark]     ",lpart2%)+"|"
+  REM      2x xxxxxxx10x xxxxxxxxxxxxxxxxxxxxxxxxxxx30x xx4x xxxxx7x xxxxxxxxxxxxxxxxx20x       
+  LPRINT "+"+REPT$("-",length%)+"+"
+  DO
+    gIPRINT "Printing ["+GEN$(counter%,2)+"]..."
+    LPRINT "|"+GEN$(counter%,-2)+"|"+ToDate$:(A.date&,"/")+"|";
+    IF A.place$=""
+      LPRINT CutFill$:(A.descrip$,lpart1%);
+    ELSE
+      LPRINT CutFill$:(A.descrip$+" ["+A.place$+"]",lpart1%);
+    ENDIF
+    LPRINT "|"+CutFill$:(A.apertur$,-4)+"|"+CutFill$:(A.shutter$,-7)+"|";
+    IF A.remark$=""
+      LPRINT CutFill$:(A.lens$,lpart2%)+"|"
+    ELSE
+      LPRINT CutFill$:(A.lens$+" ["+A.remark$+"]",lpart2%)+"|"
+	ENDIF  
+    counter%=counter%+1    
+    NEXT
+  UNTIL EOF
+ 
+  LPRINT "+"+REPT$("-",length%)+"+"
+
+ENDP
+
+PROC PrintS:
+
+  LOCAL counter%
+
+  counter%=1
+
+  REM Header
+  POSITION 1
+
+  LPRINT "Film type: "+A.descrip$;
+ 
+  IF A.apertur$<>""
+    LPRINT " ("+A.apertur$+"exp)";
+  ENDIF
+  IF A.lens$<>""
+    LPRINT " ISO"+A.lens$+"/"+CHR$(248)+GEN$(ISO2DIN:(FLT(Str2Int%:(A.lens$))),2);
+  ENDIF
+  IF A.place$<>""
+    LPRINT " (Roll ID: "+A.place$+")";
+  ENDIF
+  LPRINT
+
+  LPRINT "Camera type: "+A.remark$
+  LPRINT "Date: "+ToDate$:(A.date&,".")+"."
+  LPRINT
+  NEXT
+  
+  REM              1         2         3         4         5         6         7         8         9        10
+  REM     1234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890
+  LPRINT "+"+REPT$("-",78)+"+"
+  LPRINT "| #|   date   |  description [place]         |f/..|shutter|  lens [remark]     |"
+  REM      2x xxxxxxx10x xxxxxxxxxxxxxxxxxxxxxxxxxxx30x xx4x xxxxx7x xxxxxxxxxxxxxxxxx20x       
+  LPRINT "+"+REPT$("-",78)+"+"
+  DO
+    gIPRINT "Printing ["+GEN$(counter%,2)+"]..."
+    LPRINT "|"+GEN$(counter%,-2)+"|"+ToDate$:(A.date&,"/")+"|";
+    IF A.place$=""
+      LPRINT CutFill$:(A.descrip$,30);
+    ELSE
+      LPRINT CutFill$:(A.descrip$+" ["+A.place$+"]",30);
+    ENDIF
+    LPRINT "|"+CutFill$:(A.apertur$,-4)+"|"+CutFill$:(A.shutter$,-7)+"|";
+    IF A.remark$=""
+      LPRINT CutFill$:(A.lens$,20)+"|"
+    ELSE
+      LPRINT CutFill$:(A.lens$+" ["+A.remark$+"]",20)+"|"
+	ENDIF  
+    counter%=counter%+1    
+    NEXT
+  UNTIL EOF
+ 
+  LPRINT "+"+REPT$("-",78)+"+"
+  
+ENDP
+
+PROC CutFill$:(string$,long%)
+
+  LOCAL length%,llong%
+  
+  length%=LEN(string$)
+
+  llong%=ABS(long%)  
+
+  IF length%<llong%
+    IF long%<0
+      RETURN REPT$(" ",llong%-length%)+string$
+    ELSE
+      RETURN string$+REPT$(" ",llong%-length%)
+    ENDIF  
+  ELSEIF length%>llong%
+    RETURN LEFT$(string$,llong%)
+  ELSE : REM length%=llong%
+    RETURN string$
+  ENDIF  
+
+ENDP
+
+PROC ExpImp:
+
+  LOCAL tmpposi%,dial%
+  LOCAL file$(128)
+
+  tmpposi%=POS
+  
+  dINIT "Export or Import"
+REM  dTEXT "","Export or Import?",$202
+  dBUTTONS "Export",%e,"Import",%i
+  dial%=DIALOG
+ 
+  IF dial%=23 :RETURN :ENDIF
+
+  file$=lastfil$
+
+  WHILE 1
+    
+    dINIT "Choose file"
+    dFILE file$,"File:",1
+    dBUTTONS "Cancel",27,"Open/Save",13
+
+    IF DIALOG<>13 :RETURN :ENDIF    
+
+    IF file$=""
+      CONTINUE
+    ELSE
+      BREAK
+    ENDIF  
+
+  ENDWH
+
+  saveini%=1
+  lastfil$=file$
+
+  LOPEN file$
+
+  IF dial%=%e
+    Export:
+  ELSE
+    Import:  
+  ENDIF
+
+  LCLOSE
+  
+  POSITION tmpposi%
+
+  gIPRINT "Finished."
+
+ENDP
+
+PROC Export:
+
+  LOCAL counter%
+
+  counter%=1
+
+  REM Header
+  POSITION 1
+
+  LPRINT """Film type:""|"""+A.descrip$;
+ 
+  IF A.apertur$<>""
+    LPRINT " ("+A.apertur$+"exp)";
+  ENDIF
+  IF A.lens$<>""
+    LPRINT " ISO"+A.lens$+"/"+CHR$(248)+GEN$(ISO2DIN:(FLT(Str2Int%:(A.lens$))),2);
+  ENDIF
+  IF A.place$<>""
+    LPRINT " (Roll ID: "+A.place$+")";
+  ENDIF
+  LPRINT """"
+
+  LPRINT """Camera type:""|"""+A.remark$+""""
+  LPRINT """Date:""|"+ToDate$:(A.date&,"/")
+  NEXT
+  
+  LPRINT """#""|""date""|""description""|""place""|""f/..""|""shutter""|""lens""|""remark"""
+  DO
+    gIPRINT "Exporting ["+GEN$(counter%,2)+"]..."
+    LPRINT GEN$(counter%,-2)+"|"+ToDate$:(A.date&,"/")+"|"+""""+A.descrip$+"""|"""+A.place$+""""+"|"""+A.apertur$+"""|"""+A.shutter$+"""|"+""""+A.lens$+"""|"""+A.remark$+""""
+    counter%=counter%+1    
+    NEXT
+  UNTIL EOF
+ 
+ENDP
+
+PROC Import:
+
+ENDP
+
+PROC TubeChoi:
+
+  LOCAL objsize,sizeon
+  LOCAL magnif,tm1unit%, tm2unit%, tube
+  LOCAL dial%
+
+  objsize=60
+  sizeon=24
+
+  frmunit%=5
+  tounit%=5
+
+  WHILE 1
+
+    dINIT "Extension tube choice"
+    dFLOAT focal,"Lens focal length (mm):",8,1000
+    dFLOAT objsize,"Object size:",0.01,2000
+    dCHOICE frmunit%,"Unit:",units$
+    dFLOAT sizeon,"Desired size on film:",0.01,2000
+    dCHOICE tounit%,"Unit:",units$
+    dBUTTONS "Cancel",27,"Calculate",13
+
+    IF DIALOG<>13 :RETURN :ENDIF
+
+    magnif=sizeon/Convert:(objsize)
+    tube=magnif*focal
+    
+    tm1unit%=frmunit%
+    tm2unit%=tounit%
+    frmunit%=tounit%
+    
+	REM small number
+	tounit%=1
+    IF Convert:((focal+tube)/magnif)<1
+      tounit%=5
+    ENDIF  
+    
+    WHILE 1
+
+	  dINIT "Extension tube - RESULT"
+	  dTEXT "Magnification ratio:",Magnif$:(magnif),$300
+	  dTEXT "Lens focal length:",GEN$(focal,6)+" mm",$100
+	  dTEXt "Extension tube size:",GEN$(tube,5)+" mm",$300
+	  dTEXT "Object distance shuld be: ",GEN$(Convert:((focal+tube)/magnif),5)+" "+Choose$:(units$,tounit%),$100
+      dCHOICE tounit%,"Unit:",units$
+      dBUTTONS "Cancel",27,"Convert",%c,"Again",13
+
+      dial%=DIALOG
+
+      IF dial%=13
+        BREAK
+      ELSEIF dial%=0 :REM Esc!!!
+        RETURN
+      ENDIF
+      
+	ENDWH
+
+    frmunit%=tm1unit%
+    tounit%=tm2unit%
+
+  ENDWH
+  
+ENDP
+
+PROC Magnif$:(magnif)
+  RETURN GEN$(magnif,6)+" ("+GEN$(INT(magnif*100),3)+"%)"
+ENDP
+
+PROC Angle:
+
+  LOCAL sizeon
+
+  sizeon=24
+
+  tounit%=5
+  frmunit%=5
+  
+  WHILE 1
+
+    dINIT "Angle of view calculator"
+    dFLOAT focal,"Lens focal length (mm):",8,1000
+    dFLOAT sizeon,"Size on film:",0.01,2000    
+    dCHOICE frmunit%,"Unit:",units$
+    dTEXT "Angle of view:",GEN$(2*DEG(ATAN(Convert:(sizeon)/(2*focal))),4)+"ø",$300
+    dBUTTONS "Cancel",27,"Calculate",13
+
+    IF DIALOG<>13 :RETURN :ENDIF
+
+	ENDWH
+
+ENDP
+
+PROC Diopter:
+
+  LOCAL frm%,from
+  
+  from=1
+  frm%=1
+
+  WHILE 1
+
+    dINIT "Diopter <-> Focal length"
+    dFLOAT from,"From:",0.1,1000
+    dCHOICE frm%,"Unit:", "diopter,mm"
+    IF frm%=2
+      dTEXT "","------------------------",2  
+	ENDIF    
+    dTEXT "Result:",GEN$(1000/from,4)+" "+Choose$:("mm,diopter",frm%),$300
+	IF frm%=1
+	  dFLOAT focal,"Focal length (mm):",10,1000
+	  dTEXT "New focal length:",GEN$(((1000/from)*focal)/((1000/from)+focal),4)+" mm",$300
+	ENDIF    
+    dBUTTONS "Cancel",27,"Calculate",13
+
+    IF DIALOG<>13 :RETURN :ENDIF
+
+  ENDWH
+
+ENDP
+

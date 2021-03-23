@@ -1,0 +1,28 @@
+ Film type:    ILFORD PAN (36exp) ISO100/¯21
+ Camera type:  MINOLTA MAXXUM 9000
+ Loading date: 2000.09.08.
++----------------------------------------------------------------------------------------------+
+| #|   date   | description [place] | f/... | shutter | lens[remark] |
++----------------------------------------------------------------------------------------------+
+| 1|2000/09/07|ôn|Budapest|13|1/250|AF50mm(f1.7)|Flash + multiple exposure|
+|  2 | 2000/09/07 | ôn | Budapest | 13 | 1/250 | AF50mm(f1.7) | Flash |
+|  3 | 2000/09/09 | Farak†s | Tam†si | 3.5 | 1/60 | AF50mm(f1.7) | UV |
+|  4 | 2000/09/09 | Farak†s | Tam†sai | 3.5 | 1/60 | AF50mm(f1.7) | UV |
+|  5 | 2000/09/09 | TUTO lakat | Tam†si | 3.5 | 1/350 | AF50mm(f1.7) | UV |
+|  6 | 2000/09/10 | Bal†zs f†t v†g | Tam†si | 4.5 | 1/750 | AF28-200mm(3.5-5.6) |  |
+|  7 | 2000/09/10 | Bal†zs f†t v†g | Tam†si | 16 | 1/60 | AF28-200mm(3.5-5.6) |  |
+|  8 | 2000/09/10 | Bal†zs f†t v†g | Tam†si | 5.6 | 1/350 | AF28-200mm(3.5-5.6) |  |
+|  9 | 2000/09/16 | H†rshegy | Budapest | 1.4 | 30 | AF50mm(f1.7) | UV |
+| 10 | 2000/09/17 | H†rshegy | Budapest | 1.4 | 30 | AF50mm(f1.7) | UV |
+| 11 | 2000/09/17 | H†rshegy | Budapest | 1.4 | 30 | AF50mm(f1.7) | UV |
+| 12 | 2000/09/17 | Plak†tki†ll°t†s | Budapest | 11 | 1/250 | AF28-200mm(3.5-5.6) |  |
+| 13 | 2000/09/21 | LP-k | Budapest | 4.5 | 1/250 | AF50mm(f1.7) | UV+Flash |
+| 14 | 2000/09/21 | Magam | Budapest | 2.4 | 1/250 | AF50mm(f1.7) | UV+Flash |
+| 15 | 2000/09/25 | ôrs vezÇr tÇri Çp°tkezÇs | Budapest | 8 | 1/125 | AF50mm(f1.7) | UV |
+| 16 | 2000/10/02 | BÅfÇ | Budapest | 5.6 | 1/10 | AF50mm(f1.7) | UV |
+| 17 | 2000/10/02 | BÅfÇ | Budapest | 5.6 | 1/90 | AF50mm(f1.7) | UV |
+| 18 | 2000/10/02 | BÅfÇ | Budapest | 5.6 | 1/10 | AF50mm(f1.7) | UV |
+| 19 | 2000/10/03 | L†ngos bÅfÇ | SzÇkesfehÇrv†r | 5.6 | 1/250 | AF50mm(f1.7) | UV |
+| 20 | 2000/10/03 | L†ngos bÅfÇ t†bl†ja | SzÇkesfehÇrv†r | 5.6 | 1/90 | AF50mm(f1.7) | UV |
++----------------------------------------------------------------------------------------------+
+

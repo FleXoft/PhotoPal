@@ -1,0 +1,11 @@
+Version 1.00
+Begin Components
+*PHOTOPAL.OPL
+PP_MULTI.PIC
+End
+Begin Application
+TARGET 0
+DEFAULTPSIONDRIVE M
+COMMANDOPT 0
+LINTOPTS 1 0
+End
